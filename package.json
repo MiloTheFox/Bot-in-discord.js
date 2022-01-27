@@ -1,0 +1,30 @@
+{
+  "name": "discord_.js",
+  "version": "0.0.1",
+  "description": "A discord.js Bot made by Ohnezahn ZAE#8135",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "express": "^4.17.1",
+    "glob": "^7.2.0",
+    "moment": "^2.29.1"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://github.com/Ohnezahn-ZAE/Bot-in-discord.js/"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ],
+  "devDependencies": {
+    "node": "^16.9.1"
+  }
+}
