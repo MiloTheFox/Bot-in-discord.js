@@ -15,6 +15,7 @@ client.on("message", (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     if (command === "userinfo") {
+        
         let Target = message.mentions.users.first() || message.author
         let Member = message.guild.members.cache.get(Target.id)
         var time = Date.now()
@@ -31,6 +32,7 @@ client.on("message", (message) => {
         message.reply(embed)
     } else
     if(command === 'help') {
+        
         var time = Date.now()
         const embed = new Discord.MessageEmbed()
         .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
@@ -46,6 +48,7 @@ client.on("message", (message) => {
         message.reply(embed)
       } else
       if (command === "eval") {
+          
           var time = Date.now();
           if(message.author.id !== '705557092802625576') return message.send("This Command can only be used by authorised Personnel!")
           const command = args.join(" ");
@@ -82,6 +85,7 @@ client.on("message", (message) => {
               message.reply(embedfailure)
         }
     } else {
+        
         if (command == "ping") {
             message.channel.send("Pinging...").then(m => {
                 var botPing = Math.round(client.ws.ping);
