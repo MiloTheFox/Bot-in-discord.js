@@ -4,7 +4,7 @@ const { Client, MessageEmbed } = require('discord.js');
 const { inspect } = require('util');
 const config = require("./config.json");
 
-prefix = config.prefix // Initializing the Prefix of the
+prefix = config.prefix // Initializing the Prefix of the Bot
 
 client.once("ready", async () => {
     console.log("Bereit: ", client.user.tag);
