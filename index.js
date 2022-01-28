@@ -4,11 +4,16 @@ const { Client, MessageEmbed } = require('discord.js');
 const { inspect } = require('util');
 const config = require("./config.json");
 
-prefix = config.prefix // Initializing the Prefix of the
+
+
+prefix = config.prefix // Initializing the Prefix of the Bot
 
 client.once("ready", async () => {
-    console.log("Bereit: ", client.user.tag);
-    client.user.setActivity('with discord.js and $$', { type: 'PLAYING' });
+    console.log("Bereit: ", client.user.tag); // Says that it's ready
+    client.user.setActivity('with discord.js and $$', { type: 'PLAYING' }); 
+    /* 
+    After the Bot has started, it automatically sets the Activity / Stauts to "Playing with discord.js and $$" 
+    */
 });
 
 client.on("message", (message) => {
