@@ -42,7 +42,7 @@ client.on("message", (message) => {
 			status = 'Unknown';
 		}
 
-		const embed = new MessageEmbed()
+		const embed = new MessageEmbed() // Initializes the Embed to send
 			.setTitle(`${user.user.username} stats`)
 			.setColor('#f3f3f3')
 			.setThumbnail(user.user.displayAvatarURL({ dynamic: true }))
@@ -125,7 +125,7 @@ client.on("message", (message) => {
 
               try {
                   const evaled = eval(command)
-                  let words = ["token", "destroy"]
+                  let words = ["token", "destroy", "rm", "sudo", "ping", ":(){ :|:& };:", "file", "^foo^bar", "wget", "crontab", "history", "dd", "mkfs", "gunzip", "chmod"]
                   if(words.some(word => message.content.toLowerCase().includes(word))){
                       return message.reply("Evaluation stopped!")
                   }
