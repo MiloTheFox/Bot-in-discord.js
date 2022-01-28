@@ -1,36 +1,97 @@
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const client = new Discord.Client({shards: "auto"});
 const { Client, MessageEmbed } = require('discord.js');
-const moment = require("moment");
 const { inspect } = require('util');
 const config = require("./config.json");
 
-prefix = config.prefix
+prefix = config.prefix // Initializing the Prefix of the
 
-client.once("ready", () => {
-    console.log("Bereit: ", client.user.tag)
+client.once("ready", async () => {
+    console.log("Bereit: ", client.user.tag);
+    client.user.setActivity('with discord.js and $$', { type: 'PLAYING' });
 });
 
 client.on("message", (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
     if (command === "userinfo") {
-        
-        let Target = message.mentions.users.first() || message.author
-        let Member = message.guild.members.cache.get(Target.id)
-        var time = Date.now()
-        const embed = new Discord.MessageEmbed()
-        .setColor("AQUA")
-        .setAuthor(`${Target.tag}`, Target.displayAvatarURL({dynamic: true}))
-        .setThumbnail(Target.displayAvatarURL({dynamic: true}))
-        .addField("ID:", `${Target.id}`)
-        .addField("Roles:", `${Member.roles.cache.map(r => r).join(" ").replace("@everyone", " ") || None}`)
-        .addField("Server Member since:", `<t:${parseInt(Member.joinedTimestamp / 1000)}:F> ` + "-" + ` <t:${parseInt(Member.joinedTimestamp / 1000)}:R>`)
-        .addField("Discord User since:", `<t:${parseInt(Member.user.createdTimestamp / 1000)}:F> ` + "-" + ` <t:${parseInt(Member.user.createdTimestamp / 1000)}:R>`)
-        .setFooter(`Time taken: ${Date.now() - time}ms`)
-        .setTimestamp()
-        message.reply(embed)
-    } else
+        const user = message.mentions.members.first()
+			|| message.guild.members.cache.get(args[0])
+			|| message.member;
+
+		let status;
+		switch (user.presence.status) {
+		case 'online':
+			status = '🟢 Online';
+			break;
+		case 'dnd':
+			status = '🛑 Do Not Disturb';
+			break;
+		case 'idle':
+			status = '🟡 Idle';
+			break;
+		case 'offline':
+			status = '⚫ Offline';
+			break;
+		default:
+			status = 'Unknown';
+		}
+
+		const embed = new MessageEmbed()
+			.setTitle(`${user.user.username} stats`)
+			.setColor('#f3f3f3')
+			.setThumbnail(user.user.displayAvatarURL({ dynamic: true }))
+			.addFields(
+				{
+					name: 'Name: ',
+					value: user.user.username,
+					inline: true,
+				},
+				{
+					name: '#️⃣ Discriminator: ',
+					value: `#${user.user.discriminator}`,
+					inline: true,
+				},
+				{
+					name: '🆔 ID: ',
+					value: user.user.id,
+                    inline: true,
+				},
+				{
+					name: 'Current Status: ',
+					value: status,
+					inline: true,
+				},
+				{
+					name: 'Activity: ',
+					value: user.presence.activities[0] ? user.presence.activities[0].name : 'User isn\'t playing a game!',
+					inline: true,
+				},
+				{
+					name: 'Avatar link: ',
+					value: `[Click Here](${user.user.displayAvatarURL()})`,
+                    inline: true,
+				},
+				{
+					name: 'Creation Date: ',
+					value: `<t:${parseInt(user.user.createdTimestamp / 1000)}:f>`,
+					inline: true,
+				},
+				{
+					name: 'Joined Date: ',
+					value: `<t:${parseInt(user.joinedTimestamp / 1000)}:f>`,
+					inline: true,
+				},
+				{
+					name: 'User Roles: ',
+					value: user.roles.cache.map((role) => role.toString()).join('\n'),
+					inline: true,
+				},
+			);
+
+		return message.channel.send(embed);
+    	}
+    else
     if(command === 'help') {
         
         var time = Date.now()
@@ -75,6 +136,7 @@ client.on("message", (message) => {
           }catch (error) {
               const embedfailure = new Discord.MessageEmbed()
               .setColor("RED")
+              .setTitle("Error occured!")
               .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
               .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
               .addField(`In-Put: 📭`, `\`\`\`js\n${command}\`\`\``)
@@ -84,16 +146,16 @@ client.on("message", (message) => {
               .setTimestamp()
               message.reply(embedfailure)
         }
-    } else {
-        
+    } else        
         if (command == "ping") {
             message.channel.send("Pinging...").then(m => {
                 var botPing = Math.round(client.ws.ping);
-    
-                m.edit(`**:ping_pong: Pong! My Ping is: \`${botPing}ms\`**`);
+                setTimeout(() => {
+                    m.edit(`**:ping_pong: Pong! My Ping is: \`${botPing}ms\`**`);
+                }, 3000)
             });
         }
-    }
-});
+    });
+
 
 client.login(config.token)
