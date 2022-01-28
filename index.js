@@ -4,16 +4,11 @@ const { Client, MessageEmbed } = require('discord.js');
 const { inspect } = require('util');
 const config = require("./config.json");
 
-
-
-prefix = config.prefix // Initializing the Prefix of the Bot
+prefix = config.prefix // Initializing the Prefix of the
 
 client.once("ready", async () => {
-    console.log("Bereit: ", client.user.tag); // Says that it's ready
-    client.user.setActivity('with discord.js and $$', { type: 'PLAYING' }); 
-    /* 
-    After the Bot has started, it automatically sets the Activity / Status to "Playing with discord.js and $$" 
-    */
+    console.log("Bereit: ", client.user.tag);
+    client.user.setActivity('with discord.js and $$', { type: 'PLAYING' });
 });
 
 client.on("message", (message) => {
@@ -42,7 +37,7 @@ client.on("message", (message) => {
 			status = 'Unknown';
 		}
 
-		const embed = new MessageEmbed() // Initializes the Embed to send
+		const embed = new MessageEmbed()
 			.setTitle(`${user.user.username} stats`)
 			.setColor('#f3f3f3')
 			.setThumbnail(user.user.displayAvatarURL({ dynamic: true }))
@@ -94,7 +89,7 @@ client.on("message", (message) => {
 				},
 			);
 
-		return message.channel.send(embed); // Sending the Embed in the Channel
+		return message.channel.send(embed);
     	}
     else
     if(command === 'help') {
@@ -109,7 +104,7 @@ client.on("message", (message) => {
         .addField(`Type: Normal`, "help", false)
         .addField(`Type: Utility`, "userinfo", false)
         .addField(`Type: Bot`, "ping", false)
-        .setFooter(`Time taken: ${Date.now() - time}ms`) // Prints out the time it took the Bot to respond in Milliseconds
+        .setFooter(`Time taken: ${Date.now() - time}ms`)
         .setTimestamp()
         message.reply(embed)
       } else
@@ -127,7 +122,7 @@ client.on("message", (message) => {
                   const evaled = eval(command)
                   let words = ["token", "destroy", "rm", "sudo", "ping", ":(){ :|:& };:", "file", "^foo^bar", "wget", "crontab", "history", "dd", "mkfs", "gunzip", "chmod"]
                   if(words.some(word => message.content.toLowerCase().includes(word))){
-                      return message.reply("Evaluation stopped!")
+                      return message.reply("Evaluation stopped! Malicious code detected!").then(m => m.delete({timeout: 3000}))
                   }
                   const embed = new Discord.MessageEmbed()
                   .setColor("GREEN")
@@ -139,7 +134,7 @@ client.on("message", (message) => {
                   .addField(`Evaluated in:`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``, true)
                   .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
                   .setTimestamp()
-                  message.reply(embed)
+                  return message.reply(embed)
 
               }catch (error) {
                   const embedfailure = new Discord.MessageEmbed()
@@ -152,12 +147,12 @@ client.on("message", (message) => {
                   .addField(`Evaluated in: ⏱️`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``)
                   .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
                   .setTimestamp()
-                  message.reply(embedfailure)
+                  return message.reply(embedfailure)
             }
     };
-    } else        
+      } else        
         if (command == "ping") {
-            message.channel.send("Pinging...").then(m => {
+            return message.channel.send("Pinging...").then(m => {
                 var botPing = Math.round(client.ws.ping);
                 setTimeout(() => {
                     m.edit(`**:ping_pong: Pong! My Ping is: \`${botPing}ms\`**`);
