@@ -12,7 +12,7 @@ client.once("ready", async () => {
     console.log("Bereit: ", client.user.tag); // Says that it's ready
     client.user.setActivity('with discord.js and $$', { type: 'PLAYING' }); 
     /* 
-    After the Bot has started, it automatically sets the Activity / Stauts to "Playing with discord.js and $$" 
+    After the Bot has started, it automatically sets the Activity / Status to "Playing with discord.js and $$" 
     */
 });
 
@@ -94,7 +94,7 @@ client.on("message", (message) => {
 				},
 			);
 
-		return message.channel.send(embed);
+		return message.channel.send(embed); // Sending the Embed in the Channel
     	}
     else
     if(command === 'help') {
@@ -109,48 +109,52 @@ client.on("message", (message) => {
         .addField(`Type: Normal`, "help", false)
         .addField(`Type: Utility`, "userinfo", false)
         .addField(`Type: Bot`, "ping", false)
-        .setFooter(`Time taken: ${Date.now() - time}ms`)
+        .setFooter(`Time taken: ${Date.now() - time}ms`) // Prints out the time it took the Bot to respond in Milliseconds
         .setTimestamp()
         message.reply(embed)
       } else
       if (command === "eval") {
           
           var time = Date.now();
-          if(message.author.id !== '705557092802625576') return message.send("This Command can only be used by authorised Personnel!")
-          const command = args.join(" ");
-          if(!command) return message.reply("Tell me what I should evaluate for you!")
+          if(message.author.id !== '705557092802625576') {
+              message.channel.send("This Command can only be used by Ohnezahn ZAE#8135!")
+              .then(m => m.delete({timeout: 3000}))
+            } else {
+              const command = args.join(" ");
+              if(!command) return message.reply("Tell me what I should evaluate for you!")
 
-          try {
-              const evaled = eval(command)
-              let words = ["token", "destroy"]
-              if(words.some(word => message.content.toLowerCase().includes(word))){
-                  return message.reply("Evaluation stopped!")
-              }
-              const embed = new Discord.MessageEmbed()
-              .setColor("GREEN")
-              .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
-              .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
-              .setTitle("Correctly evaluated")
-              .setDescription("**In-Put: 📭**\n" + `\`\`\`js\n${command}\`\`\``+ "\n**Out-Put: 📬**\n" + `\`\`\`js\n${inspect(evaled, {depth: 0})} \`\`\``)
-              .addField(`Type:`, `\`\`\`prolog\n${typeof(evaled)}\`\`\``, true)
-              .addField(`Evaluated in:`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``, true)
-              .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
-              .setTimestamp()
-              message.reply(embed)
+              try {
+                  const evaled = eval(command)
+                  let words = ["token", "destroy"]
+                  if(words.some(word => message.content.toLowerCase().includes(word))){
+                      return message.reply("Evaluation stopped!")
+                  }
+                  const embed = new Discord.MessageEmbed()
+                  .setColor("GREEN")
+                  .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
+                  .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
+                  .setTitle("Correctly evaluated")
+                  .setDescription("**In-Put: 📭**\n" + `\`\`\`js\n${command}\`\`\``+ "\n**Out-Put: 📬**\n" + `\`\`\`js\n${inspect(evaled, {depth: 0})} \`\`\``)
+                  .addField(`Type:`, `\`\`\`prolog\n${typeof(evaled)}\`\`\``, true)
+                  .addField(`Evaluated in:`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``, true)
+                  .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
+                  .setTimestamp()
+                  message.reply(embed)
 
-          }catch (error) {
-              const embedfailure = new Discord.MessageEmbed()
-              .setColor("RED")
-              .setTitle("Error occured!")
-              .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
-              .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
-              .addField(`In-Put: 📭`, `\`\`\`js\n${command}\`\`\``)
-              .addField(`Error: 🛑`, `\`\`\`js\n${error}\`\`\``)
-              .addField(`Evaluated in: ⏱️`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``)
-              .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
-              .setTimestamp()
-              message.reply(embedfailure)
-        }
+              }catch (error) {
+                  const embedfailure = new Discord.MessageEmbed()
+                  .setColor("RED")
+                  .setTitle("Error occured!")
+                  .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
+                  .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
+                  .addField(`In-Put: 📭`, `\`\`\`js\n${command}\`\`\``)
+                  .addField(`Error: 🛑`, `\`\`\`js\n${error}\`\`\``)
+                  .addField(`Evaluated in: ⏱️`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``)
+                  .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
+                  .setTimestamp()
+                  message.reply(embedfailure)
+            }
+    };
     } else        
         if (command == "ping") {
             message.channel.send("Pinging...").then(m => {
