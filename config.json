@@ -1,4 +1,4 @@
 {
-    "token": "the-token",
+    "token": "", // should be obvious
     "prefix": "$$"
 }
