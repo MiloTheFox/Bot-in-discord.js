@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
-const client = new Discord.Client({shards: "auto"});
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, Intents } = require('discord.js');
+const client = new Client({intents: [Intents.FLAGS.ALL], shards: "auto"});
+const { MessageEmbed } = require('discord.js');
 const { inspect } = require('util');
 const config = require("./config.json");
 
@@ -39,7 +40,7 @@ client.on("message", (message) => {
 
 		const embed = new MessageEmbed()
 			.setTitle(`${user.user.username} stats`)
-			.setColor('#f3f3f3')
+			.setColor('RANDOM')
 			.setThumbnail(user.user.displayAvatarURL({ dynamic: true }))
 			.addFields(
 				{
@@ -96,13 +97,13 @@ client.on("message", (message) => {
         
         var time = Date.now()
         const embed = new Discord.MessageEmbed()
+        .setColor('RANDOM')
         .setAuthor(`${message.author.tag}`, message.author.displayAvatarURL({dynamic: true}))
         .setThumbnail(client.user.displayAvatarURL({dynamic: true}))
-        .setColor("YELLOW")
         .setTitle("Help List")
         .addField(`Type: Developer`, "eval", false)
         .addField(`Type: Normal`, "help", false)
-        .addField(`Type: Utility`, "userinfo", false)
+        .addField(`Type: Utility`, "userinfo\nserverinfo", false)
         .addField(`Type: Bot`, "ping", false)
         .setFooter(`Time taken: ${Date.now() - time}ms`)
         .setTimestamp()
@@ -122,7 +123,7 @@ client.on("message", (message) => {
                   const evaled = eval(command)
                   let words = ["token", "destroy", "rm", "sudo", "ping", ":(){ :|:& };:", "file", "^foo^bar", "wget", "crontab", "history", "dd", "mkfs", "gunzip", "chmod"]
                   if(words.some(word => message.content.toLowerCase().includes(word))){
-                      return message.reply("Evaluation stopped! Malicious code detected!").then(m => m.delete({timeout: 3000}))
+                      return message.reply("Evaluation stopped! Malicious code execution detected!").then(m => m.delete({timeout: 3000}))
                   }
                   const embed = new Discord.MessageEmbed()
                   .setColor("GREEN")
@@ -131,8 +132,7 @@ client.on("message", (message) => {
                   .setTitle("Correctly evaluated")
                   .setDescription("**In-Put: 📭**\n" + `\`\`\`js\n${command}\`\`\``+ "\n**Out-Put: 📬**\n" + `\`\`\`js\n${inspect(evaled, {depth: 0})} \`\`\``)
                   .addField(`Type:`, `\`\`\`prolog\n${typeof(evaled)}\`\`\``, true)
-                  .addField(`Evaluated in:`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``, true)
-                  .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
+                  .setFooter(`Evaluated in: ${Date.now()-message.createdTimestamp}ms`, message.author.displayAvatarURL({dynamic: true}))
                   .setTimestamp()
                   return message.reply(embed)
 
@@ -144,20 +144,79 @@ client.on("message", (message) => {
                   .setThumbnail(message.author.displayAvatarURL({dynamic: true}))
                   .addField(`In-Put: 📭`, `\`\`\`js\n${command}\`\`\``)
                   .addField(`Error: 🛑`, `\`\`\`js\n${error}\`\`\``)
-                  .addField(`Evaluated in: ⏱️`, `\`\`\`${Date.now()-message.createdTimestamp} ms\`\`\``)
-                  .setFooter("Made by Ohnezahn ZAE#8135", message.author.displayAvatarURL({dynamic: true}))
+                  .setFooter(`Evaluated in: ${Date.now()-message.createdTimestamp}ms`, message.author.displayAvatarURL({dynamic: true}))
                   .setTimestamp()
                   return message.reply(embedfailure)
             }
     };
       } else        
         if (command == "ping") {
+
             return message.channel.send("Pinging...").then(m => {
                 var botPing = Math.round(client.ws.ping);
                 setTimeout(() => {
                     m.edit(`**:ping_pong: Pong! My Ping is: \`${botPing}ms\`**`);
                 }, 3000)
             });
+        }
+        else
+        if (command == "serverinfo") {
+            
+            let level;
+		switch (message.guild.verificationLevel) {
+        case 'NONE':
+            level = '⚪ None set';
+            break;
+		case 'LOW':
+			level = '🟢 Low';
+			break;
+		case 'MEDIUM':
+			level = '🟡 Medium';
+			break;
+		case 'HIGH':
+			level = '🟠 High';
+			break;
+		case 'VERY_HIGH':
+			level = '🛑 Very High';
+			break;
+		}
+            
+            var date = Date.now()
+            const serverinfoembed = new Discord.MessageEmbed()
+            .setColor('RANDOM')
+            .setThumbnail(`${message.guild.iconURL({dynamic: true})}`)
+            .setAuthor(`${message.author.tag}`, `${message.author.displayAvatarURL({dynamic: true})}`)
+            .setTitle(`Server-Information about ${message.guild.name}`)
+            .addFields(
+                {
+                name: "Server-ID 🆔:",
+                value: `${message.guild.id}`,
+                inline: false
+                },
+                {
+                name: "Server Owner:",
+                value: `${message.guild.owner.user.tag}\n<@!${message.guild.ownerID}>`,
+                inline: false
+                },
+                {
+                name: "Member Count:",
+                value: `${message.guild.memberCount}`,
+                inline: false
+                },
+                {
+                name: "Verification Level:",
+                value: `${level}`,
+                inline: false
+                },
+                {
+                name: "Created at:",
+                value: `<t:${parseInt(message.guild.createdTimestamp / 1000)}:F>\n<t:${parseInt(message.guild.createdTimestamp / 1000)}:R>`,
+                inline: false
+                }
+            )
+            .setTimestamp()
+            .setFooter(`Executed in: ${date-message.createdTimestamp}ms`)
+            return message.reply(serverinfoembed)
         }
     });
 
