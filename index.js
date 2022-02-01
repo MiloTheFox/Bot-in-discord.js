@@ -5,12 +5,27 @@ const { MessageEmbed } = require('discord.js');
 const { inspect } = require('util');
 const config = require("./config.json");
 
+const status = ["with discord.js and $$", "with Prefix $$", "with Ohnezahn ZAE#8135"]
+let current = 1;
+
 prefix = config.prefix // Initializing the Prefix of the Bot
+
 
 client.once("ready", async () => {
     console.log("Bereit: ", client.user.tag);
-    client.user.setActivity('with discord.js and $$', { type: 'PLAYING' });
-});
+    client.user.setActivity(status[0], { type: 'PLAYING' })
+
+    setInterval(() => {
+        if(status[current]) {
+            client.user.setActivity(status[current], {type: "PLAYING"})
+            current++;
+        } else {
+            status = 0;
+            client.user.setActivity(status[current], {type: "WATCHING"})
+        }
+        }, 90*1000)
+    });
+
 
 client.on("message", (message) => {
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
