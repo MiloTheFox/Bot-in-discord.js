@@ -1,11 +1,12 @@
 const Discord = require('discord.js');
+const { fetchNeko } = require("nekos-best.js");
 const { Client, Intents } = require('discord.js');
 const client = new Client({intents: [Intents.FLAGS.ALL], shards: "auto"});
 const { MessageEmbed } = require('discord.js');
 const { inspect } = require('util');
 const config = require("./config.json");
 
-const status = ["with discord.js and $$", "with Prefix $$", "with Ohnezahn ZAE#8135"]
+let status = ["with discord.js and $$", "with Prefix $$", "with Ohnezahn ZAE#8135"]
 let current = 1;
 
 prefix = config.prefix // Initializing the Prefix of the Bot
@@ -13,7 +14,8 @@ prefix = config.prefix // Initializing the Prefix of the Bot
 
 client.once("ready", async () => {
     console.log("Bereit: ", client.user.tag);
-    client.user.setActivity(status[0], { type: 'PLAYING' })
+    client.channels.cache.get("939978823578030140").send("I'm online!")
+    client.user.setActivity(status[0], { type: 'PLAYING' });
 
     setInterval(() => {
         if(status[current]) {
@@ -28,7 +30,9 @@ client.once("ready", async () => {
 
 
 client.on("message", (message) => {
-    const args = message.content.slice(prefix.length).trim().split(/ +/g);
+    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
     const command = args.shift().toLowerCase();
     if (command === "userinfo") {
         const user = message.mentions.members.first()
@@ -120,6 +124,7 @@ client.on("message", (message) => {
         .addField(`Type: Normal`, "help", false)
         .addField(`Type: Utility`, "userinfo\nserverinfo", false)
         .addField(`Type: Bot`, "ping", false)
+        .addField(`Type: Fun`, "neko", false)
         .setFooter(`Time taken: ${Date.now() - time}ms`)
         .setTimestamp()
         message.reply(embed)
@@ -136,7 +141,7 @@ client.on("message", (message) => {
 
               try {
                   const evaled = eval(command)
-                  let words = ["token", "destroy", "rm", "sudo", "ping", ":(){ :|:& };:", "file", "^foo^bar", "wget", "crontab", "history", "dd", "mkfs", "gunzip", "chmod"]
+                  let words = ["token", "destroy", "rm", "sudo", ":(){ :|:& };:", "file", "^foo^bar", "wget", "crontab", "history", "dd", "mkfs", "gunzip", "chmod"]
                   if(words.some(word => message.content.toLowerCase().includes(word))){
                       return message.reply("Evaluation stopped! Malicious code execution detected!").then(m => m.delete({timeout: 3000}))
                   }
@@ -232,6 +237,17 @@ client.on("message", (message) => {
             .setTimestamp()
             .setFooter(`Executed in: ${date-message.createdTimestamp}ms`)
             return message.reply(serverinfoembed)
+        }
+    	else
+        if (command === "neko") {
+            
+            const embed = new Discord.MessageEmbed()
+            .setColor('RANDOM')
+            .setImage(`https://nekos.best/api/v1/nekos/0${Math.floor(Math.random() * 500)}.jpg`)
+            .setTitle("Here's your Neko")
+            .setTimestamp()
+            .setFooter(`Powered by Nekos Best API`)
+            message.channel.send(embed)
         }
     });
 
