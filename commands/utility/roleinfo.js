@@ -29,7 +29,6 @@ module.exports = {
                     {name: 'Members with that Role:', value: `${role.members.size}`, inline: true},
                     {name: 'Position:', value: `${role.position}`, inline: true},
                     {name: 'Mentionable:', value: `${role.mentionable}`, inline: true},
-                    // if hoisted return yes otherwise no
                     {name: 'Hoisted:', value: `${role.hoisted? 'Yes' : 'No'}`}
                 )
                 .setTimestamp();
