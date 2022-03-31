@@ -1,4 +1,7 @@
 {
     "token": "",
-    "prefix": "$$"
+    "version": "1.0.0 Alpha",
+    "prefix": "ds!",
+    "ownertag": "Ohnezahn ZAE#8135",
+    "ownerid": "705557092802625576"
 }
