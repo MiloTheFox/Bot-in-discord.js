@@ -1,6 +1,6 @@
 const log = (arg) => console.log(arg);
 
-const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const fetch = require('node-fetch');
 const moment = require('moment');
 
@@ -8,33 +8,32 @@ module.exports = {
     name: 'github-info',
     description: 'Gets information about a github user.',
     usage: 'ds!github-info <user>',
+    aliases: ['gh-info'],
     run: async(client, msg, args) => {
         try{
-            const toTimestamp = (strDate) => {
-                const dt = moment(strDate).unix();
-                return dt;
-            };
-
             let user = args[0];
-            let github = await fetch(`https://api.popcat.xyz/github/${user}`).then(res => res.json());
+            const github = await fetch(`https://api.github.com/users/${user}`).then(res => res.json());
             if (github.error) {
                 return msg.channel.send('Unable to find user! Check your Input and try again!');
             }
-            const embed = new Discord.MessageEmbed()
+            const embed = new MessageEmbed()
                 .setColor('GREEN')
-                .setThumbnail(github.avatar)
-                .setAuthor({name: `${github.name}`, iconURL: github.avatar})
+                .setThumbnail(github.avatar_url)
+                .setAuthor({name: `${github.name}`, iconURL: github.avatar_url})
                 .setTitle('Github-Info')
                 .addFields(
-                    {name: 'Repositories:', value: `${github.public_repos}`, inline: true},
-                    {name: 'Followers:', value: `${github.followers}`, inline: true},
-                    {name: 'Following:', value: `${github.following}`, inline: true},
-                    {name: 'Github URL:', value: `${github.url}`, inline: true},
-                    {name: 'Bio:', value: `${github.bio}`, inline: true},
-                    {name: 'Company:', value: `${github.company}`, inline: true},
-                    {name: 'Location:', value: `${github.location}`, inline: true},
-                    {name: 'Account Type:', value: `${github.account_type}`, inline: true},
-                    {name: 'Created at:', value: `**<t:${toTimestamp(moment.utc(github.created_at))}:F>**`, inline: true},
+
+                    {name: 'Name', value: `${github.name}`, inline: true},
+                    {name: 'Company', value: `${github.company}`, inline: true},
+                    {name: 'Location', value: `${github.location}`, inline: true},
+                    {name: 'Followers', value: `${github.followers.toLocaleString()}`, inline: true},
+                    {name: 'Following', value: `${github.following.toLocaleString()}`, inline: true},
+                    {name: 'Public Repos', value: `${github.public_repos}`, inline: true},
+                    {name: 'Public Gists', value: `${github.public_gists}`, inline: true},
+                    {name: 'Created', value: `${moment(github.created_at).format('MMMM Do YYYY, h:mm:ss a')}`, inline: true},
+                    {name: 'Bio', value: github.bio ? `${github.bio}` : 'No bio set!', inline: true},
+                    {name: 'Twitter', value: github.twitter_username ? `${github.twitter_username}` : 'No twitter username set!', inline: true},
+                    {name: 'Github URL', value: `[Click Here](${github.html_url})`, inline: true},
                 )
                 .setTimestamp();
             return msg.channel.send({embeds: [embed]});
