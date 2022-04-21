@@ -2,11 +2,11 @@ const Discord = require('discord.js');
 const fetch = require('node-fetch');
 const ms = require('ms');
 
-// initialize the timeout command
+
 module.exports = {
     name: 'timeout',
-    description: 'Mutes the specified user for the specified amount of time. The limit is 28 Days due to Discord Limitations!',
-    usage: 'ds!timeout <user> <time> (optinal)<reason>',
+    description: 'Timeouts the specified user for the specified amount of time. Timeout limit is 28 Days due to Discord Limitations!',
+    usage: 'ds!timeout <user> <time> (optional)<reason>',
     run: async(client, msg, args) => {
         try{
             const time = args.slice(1).join(' ');
@@ -34,10 +34,11 @@ module.exports = {
             if(!reason) {
                 reason = 'No reason specified!';
             }
-            const iosTime = new Date(Date.now() + milliseconds).toISOString();
-            if(iosTime >= 2419200) {
-                return msg.channel.send('The timeout limit is 28 Days due to Discord Limitations!');
+            if(user.isCommunicationDisabled) {
+                return msg.channel.send('This User is timed out already!');
             }
+            const iosTime = new Date(Date.now() + milliseconds).toISOString();
+
             await fetch(`https://discordapp.com/api/guilds/${msg.guild.id}/members/${user.id}`, {
                 method: 'PATCH',
                 body: JSON.stringify({ communication_disabled_until: iosTime }),
@@ -46,6 +47,7 @@ module.exports = {
                     'Authorization': `Bot ${client.token}`,
                 },
             });
+            // send the timeout message in an embed
             const embed = new Discord.MessageEmbed()
             .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
             .setColor('BLUE')
@@ -55,6 +57,7 @@ module.exports = {
             return msg.channel.send({embeds: [embed]});
         } catch(error) {
             console.log(error);
+            return;
         }
     }
 };
