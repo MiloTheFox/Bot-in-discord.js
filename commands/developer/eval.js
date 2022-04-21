@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const { inspect } = require('util');
 module.exports = {
     name: 'eval',
-    description: 'Evaluates JavaScript Code (Bot Owner Cmd)',
+    description: 'Evaluates JavaScript Code.',
     usage: 'ds!eval <code>',
     run: async(client, msg, args) => {
         try{
@@ -15,18 +15,36 @@ module.exports = {
                 msg.channel.send('You need to provide some code!');
                 return;
             }
-            if (command.includes('client.token') || command.includes('process.env')) {
-                msg.channel.send('🚫');
+            if (command.includes('client.token')) {
+                msg.channel.send('You cannot execute client.token!');
+                return;
+            }
+            if (command.includes('process.env.TOKEN')) {
+                msg.channel.send('You cannot execute process.env.TOKEN!');
                 return;
             }
                 try {
                     const evaled = await eval(command);
+                    const type = typeof evaled;
+                    const typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
                     const embed = new Discord.MessageEmbed()
                     .setColor('BLUE')
                     .setThumbnail(client.user.displayAvatarURL({dynamic: true}))
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
                     .setTitle('Evaluated Code')
-                    .setDescription(`**Input:** \`\`\`js\n${command}\n\`\`\`\n**Output:**\`\`\`js\n${inspect(evaled, { depth: 0 })}\n\`\`\`\n**Type:**\`\`\`yaml\n${typeof evaled}\`\`\``)
+                    .setDescription(`**Output:**\`\`\`js\n${inspect(evaled,{ depth : 1 })}\`\`\`\n**Input:** \`\`\`js\n${command}\n\`\`\``)
+                    .addFields(
+                        {
+                        name: 'Type:',
+                        value: `\`\`\`js\n${typeCapitalized}\n\`\`\``,
+                        inline: false
+                    },
+                        {
+                        name: "Time:",
+                        value: `\`\`\`yaml\n${Date.now() - msg.createdTimestamp}ms\n\`\`\``,
+                        inline: false
+                    }
+                    )
                     .setTimestamp();
                     return msg.reply({embeds: [embed]});
                 } catch (error) {
@@ -35,12 +53,19 @@ module.exports = {
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
                     .setColor('RED')
                     .setTitle('Error ocurred!')
-                    .setDescription(`\`\`\`js\n${error}\n\`\`\``)
+                    .setDescription(`\`\`\`js\n${error.stack}\n\`\`\``)
                     .setTimestamp();
                     return msg.reply({embeds: [embed]});
                 }
         } catch(error) {
             console.log(error);
+            const embed = new Discord.MessageEmbed()
+                    .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
+                    .setColor('RED')
+                    .setTitle('Error ocurred!')
+                    .setDescription(`\`\`\`js\n${error.stack}\n\`\`\``)
+                    .setTimestamp();
+                    return msg.reply({embeds: [embed]});
         }
     }
 };
