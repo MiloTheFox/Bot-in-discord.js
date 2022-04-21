@@ -1,6 +1,5 @@
 const client = require('../bot');
-const config = require('../config.json');
-const prefix = config.prefix;
+const prefix = 'ds!';
 
 client.on('messageCreate', async (message) => {
     if(message.author.bot) return;
@@ -8,15 +7,14 @@ client.on('messageCreate', async (message) => {
     if(!message.guild) return;
     if(!message.member) message.member = await message.guild.members.fetch(message.author);
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
-    const cmd = args.shift().toLowerCase();
-    if(cmd.length === 0) return;
-    let command = client.commands.get(cmd);
-    if(!command) command = client.commands.get(client.aliases.get(cmd));
-    if(command) {
-        try{
+    const commandName = args.shift().toLowerCase();
+
+    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    if (!command) return;
+    try{
         command.run(client, message, args);
         } catch(error) {
             console.log(error);
         }
     }
-});
+);
