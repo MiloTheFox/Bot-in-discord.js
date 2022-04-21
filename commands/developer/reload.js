@@ -1,5 +1,6 @@
 module.exports = {
     name: 'reload',
+    aliases: ['reload_command', 'rmc'],
     category: 'owner',
     description: 'Reloads a Command.',
     usage: 'ds!reload <category> <commandname>',
@@ -17,7 +18,7 @@ module.exports = {
       client.commands.delete(command);
       const pull = require(`../../commands/${category}/${command}.js`);
       client.commands.set(command, pull);
-      console.log(`Reloaded ${command} from ${category}`);
+      console.log(`Reloaded Command ${command}`);
       return message.channel.send(`Reload on **${command}** completed!`);
     } catch(error) {
       message.channel.send(`An unexpected Error occurred whilst trying to reload **${command}**: \`${error.message}\``);
