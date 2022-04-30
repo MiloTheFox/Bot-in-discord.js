@@ -13,12 +13,12 @@ module.exports = {
                 msg.channel.send('You are not the Bot Owner!');
                 return;
             }
-            
             if (args.length < 1) {
-                msg.channel.send('You need to provide some code!');
+                msg.channel.send('You need to provide an Command to execute!');
                 return;
             }
 
+            // execute the command
             exec(args.join(' '), (error, stdout, stderr) => {
                 if (!error) {
                     const embed = new MessageEmbed()
@@ -28,7 +28,6 @@ module.exports = {
                     .setThumbnail(msg.author.displayAvatarURL({dynamic: true}))
                     .setDescription(`**Input:** \`\`\`js\n${args.join(' ')}\n\`\`\`\n**Output:**\`\`\`js\n${stdout}\n\`\`\``)
                     .setTimestamp();
-                    // send the embed
                     return msg.reply({embeds: [embed]});
                 } else {
                     const embed = new MessageEmbed()
