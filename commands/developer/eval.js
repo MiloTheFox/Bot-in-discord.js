@@ -1,5 +1,7 @@
 const Discord = require('discord.js');
 const { inspect } = require('util');
+const Buffer = require('buffer').Buffer;
+
 module.exports = {
     name: 'eval',
     description: 'Evaluates JavaScript Code.',
@@ -15,47 +17,55 @@ module.exports = {
                 msg.channel.send('You need to provide some code!');
                 return;
             }
-            if (command.includes('client.token')) {
-                msg.channel.send('You cannot execute client.token!');
+            if (command.includes('client.token') || command.includes('process.env.TOKEN')) {
+                msg.channel.send('You cannot execute commands containing .token!');
                 return;
             }
-            if (command.includes('process.env.TOKEN')) {
-                msg.channel.send('You cannot execute process.env.TOKEN!');
-                return;
-            }
-                try {
-                    const evaled = await eval(command);
+                    const evaled = eval(command);
                     const type = typeof evaled;
                     const typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
                     const embed = new Discord.MessageEmbed()
+                    embed.setDescription(`**Output:**\`\`\`js\n${inspect(evaled,{ depth : 2 })}\`\`\`\n**Input:** \`\`\`js\n${command}\n\`\`\``)
+                    if (embed.description.length > 4096) {
+                        embed.setColor('BLUE')
+                        embed.setThumbnail(client.user.displayAvatarURL({dynamic: true}))
+                        embed.setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
+                        embed.setTitle('Evaluated Code')
+                        embed.setDescription(`**Input:** \`\`\`js\n${command}\n\`\`\``)
+                        embed.addFields(
+                        {
+                        name: 'Type:',
+                        value: `\`\`\`js\n${typeCapitalized}\n\`\`\``,
+                        inline: false
+                        },
+                        {
+                        name: "Time:",
+                        value: `\`\`\`js\n${Date.now() - msg.createdTimestamp}ms\n\`\`\``,
+                        inline: false
+                    })
+                    embed.setTimestamp()
+                    const file = Buffer.from(inspect(evaled,{ depth : 2 }));
+                    return msg.reply({embeds: [embed], files: [{attachment: file, name: 'output.js'}]});
+                    } else{
+                    const embed2 = new Discord.MessageEmbed()
                     .setColor('BLUE')
                     .setThumbnail(client.user.displayAvatarURL({dynamic: true}))
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
+                    .setDescription(`**Output:**\`\`\`js\n${inspect(evaled,{ depth : 2 })}\`\`\`\n**Input:** \`\`\`js\n${command}\n\`\`\``)
                     .setTitle('Evaluated Code')
-                    .setDescription(`**Output:**\`\`\`js\n${inspect(evaled,{ depth : 1 })}\`\`\`\n**Input:** \`\`\`js\n${command}\n\`\`\``)
                     .addFields(
                         {
                         name: 'Type:',
                         value: `\`\`\`js\n${typeCapitalized}\n\`\`\``,
                         inline: false
-                    },
+                        },
                         {
                         name: "Time:",
-                        value: `\`\`\`yaml\n${Date.now() - msg.createdTimestamp}ms\n\`\`\``,
+                        value: `\`\`\`js\n${Date.now() - msg.createdTimestamp}ms\n\`\`\``,
                         inline: false
-                    }
-                    )
-                    .setTimestamp();
-                    return msg.reply({embeds: [embed]});
-                } catch (error) {
-                    console.log(error);
-                    const embed = new Discord.MessageEmbed()
-                    .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
-                    .setColor('RED')
-                    .setTitle('Error ocurred!')
-                    .setDescription(`\`\`\`js\n${error.stack}\n\`\`\``)
-                    .setTimestamp();
-                    return msg.reply({embeds: [embed]});
+                    })
+                    .setTimestamp()
+                    return msg.reply({embeds: [embed2]});
                 }
         } catch(error) {
             console.log(error);
@@ -66,6 +76,6 @@ module.exports = {
                     .setDescription(`\`\`\`js\n${error.stack}\n\`\`\``)
                     .setTimestamp();
                     return msg.reply({embeds: [embed]});
-        }
+    	}
     }
 };
