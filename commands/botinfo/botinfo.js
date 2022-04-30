@@ -1,34 +1,44 @@
 const { MessageEmbed } = require('discord.js');
 const os = require('os');
 const { version } = require('discord.js');
-const prettyMilliseconds = require("pretty-ms");
+const process = require('process');
+const moment = require('moment');
 
 module.exports = {
-    name: 'botinfo',
-    aliases: ['about', 'clientinfo'],
-    usage: "ds!botinfo",
-    description: 'Prints the bot\'s info (name, id, etc.)',
+    name: 'about',
+    aliases: ['botinfo', 'bot-stats'],
+    description: 'Prints the bot\'s info (name, id, etc.) alongside the os architecture and node version',
     run: async(client, message, args) => {
         try{
-        // get the bot's info
-        const botowner = await client.users.fetch('705557092802625576');
-        let ptfm = os.platform().replace('linux', 'Linux')
+            const toTimestamp = (strDate) => {  
+                const dt = moment(strDate).unix();  
+                return dt;  
+            };
+        const bot = client.user;
+        const botId = bot.id;
+        const botTag = bot.tag;
+        const botAvatar = bot.displayAvatarURL({ dynamic: true });
+        const botCreatedAt = bot.createdAt;
+        const botCreatedAtUnix = bot.createdTimestamp;
+        const osArch = os.arch();
+        const osRelease = os.release();
+        const osType = os.type();
+        const osLoadavg = os.loadavg();
+        const osTotalmem = os.totalmem();
+        const osFreemem = os.freemem();
+        const osUptime = os.uptime();
+        const nodeVersion = process.version;
+        const nodeArch = process.arch;
+        const discordJsVersion = version;
         const embed = new MessageEmbed()
-            .setColor('GREEN')
-            .setAuthor({name: client.user.tag, iconURL: client.user.displayAvatarURL({dynamic: true})})
+            .setColor('#0099ff')
+            .setThumbnail(botAvatar)
+            .setAuthor({name: botTag, iconURL: botAvatar})
             .setTitle('About')
-            .addFields(
-                {name: 'Bot Name:', value: client.user.username, inline: true},
-                {name: 'Bot ID:', value: client.user.id, inline: true},
-                {name: 'discord.js Version:', value: version, inline: true},
-                {name: 'Node Version:', value: process.version, inline: true},
-                {name: 'OS:', value: ptfm, inline: true},
-                {name: 'Uptime:', value: `${prettyMilliseconds(client.uptime)}`, inline: true},
-            )
-        	.setFooter({text: `Made with ❤️ by ${botowner.tag}`, iconURL: botowner.displayAvatarURL()})
-            .setTimestamp();
-        // send the embed
-        return message.channel.send({embeds: [embed]});
+            .setDescription(`**Bot Tag:** ${botTag}**\nBot ID:** ${botId}\n**Bot Created at Unix:** **<t:${toTimestamp(moment.utc(bot.createdTimestamp))}:F>**\n**OS Architecture:** ${osArch}\n**OS Release:** ${osRelease}\n**OS Type:** ${osType}\n**Node Architecture:** ${nodeArch}\n**Discord.js Version:** ${discordJsVersion}\n**CPU Usage:** ${(process.cpuUsage().user / 1024 / 1024).toFixed(2)}%\n**RAM Usage:** ${(process.memoryUsage(). heapUsed / 1024 / 1024).toFixed(2)} MB`)
+            .setTimestamp()
+            .setFooter({text: `Made with ❤️ by ${client.users.cache.get("705557092802625576").tag}`});
+        return message.channel.send({ embeds: [embed] });
         } catch(err){
             console.log(err);
         }
