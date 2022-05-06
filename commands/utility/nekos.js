@@ -1,4 +1,4 @@
-onst { MessageEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const { Client } = require('nekos-best.js');
 
 module.exports = {
@@ -6,7 +6,6 @@ module.exports = {
   description: 'Sends a random neko image. [non-NSFW] (optional: Amount)',
   usage: 'ds!neko [amount]',
   category: 'utility',
-  nsfw: false,
   run: async (client, message, args) => {
     const nekosBest = new Client();
     await nekosBest.init();
