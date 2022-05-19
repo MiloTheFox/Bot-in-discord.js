@@ -1,67 +1,203 @@
 const log = (arg) => console.log(arg);
-
-const Discord = require('discord.js');
+const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
 
 module.exports = {
-     name: 'ban',
-     description: 'Bans a user from the server.',
-     usage: 'ds!ban <user> <reason>',
-     run: async(client, msg, args) => {
-    try {
-            const user = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(member => member.user.username.toLowerCase() === args.slice(0).join(' ').toLowerCase());
+    name: "ban",
+    aliases: ["ban-id"],
+    utilisation: "ds!ban <userid> <reason>",
 
-            const reason = args.slice(1).join(' ');
-            if (!msg.member.permissions.has('BAN_MEMBERS')) {
-                msg.channel.send('You do not have the permission to ban members!');
-                return;
-            }
+    run: async (client, message, args) => {
+        try {
+            let user = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+            let reason = args.slice(1).join(' ') || 'No reason provided';
+            if(user) {
+                try{
+                let button = new MessageActionRow().addComponents(
+                    new MessageButton()
+                        .setStyle("SUCCESS")
+                        .setLabel("Ban")
+                        .setCustomId("rel"),
+                    new MessageButton()
+                        .setStyle("DANGER")
+                        .setLabel("Revoke")
+                        .setCustomId("del")
+                );
+                let embed1 = new MessageEmbed()
+                    .setColor('#0099ff')
+                    .setTitle('Ban Pending')
+                    .setDescription(`**User:** <@${user.id}>\n**Moderator:** <@${message.author.id}>\n**Reason:** ${reason}`)
+                    .setTimestamp()
+                    .setFooter({ text: 'Dragon Serenity Ban System', icon_url: message.author.displayAvatarURL({ dynamic: true }) });
+                return await message.channel.send({ embeds: [embed1], components: [button] }).then(async (Message) => {
+                    const filter = (i) => i.user.id === message.author.id;
+                    let col = await Message.createMessageComponentCollector({
+                        filter,
+                        time: 1200000,
+                    });
 
-            if (!msg.guild.me.permissions.has('BAN_MEMBERS')) {
-                msg.channel.send('I do not have the permission to ban members!');
-                return;
-            }
-            if (!user) {
+                    col.on("collect", async (button) => {
+                        if (button.user.id !== message.author.id) return;
+                        switch (button.customId) {
+                            case "rel":
+                                col.stop(true);
+                                await message.guild.members.ban(user.id, { reason: reason });
+                                let embed2 = new MessageEmbed()
+                                    .setColor('#0099ff')
+                                    .setTitle('Ban executed!')
+                                    .setDescription(`**Successfully banned User.**\n**User:** <@${user.id}>\n**Moderator:** <@${message.author.id}>\n**Reason:** ${reason}`)
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Dragon Serenity Ban System', icon_url: message.author.displayAvatarURL({ dynamic: true }) });
+                                await Message.edit({ embeds: [embed2] });
+                                button
+                                    .reply({
+                                        content: "> **✅ Success** | Ban executed!",
+                                        ephemeral: true,
+                                    })
+                                    .catch((e) => {
+                                        log(e);
+                                    });
+                                break;
+                            case "del":
+                                col.stop(true);
+                                let embed3 = new MessageEmbed()
+                                    .setColor('#0099ff')
+                                    .setTitle('🆗 Cleared')
+                                    .setDescription(`Ban has been aborted!\n**User:** <@${user.mention}>`)
+                                    .setTimestamp()
+                                    .setFooter({ text: 'Dragon Serenity Ban System', icon_url: message.author.displayAvatarURL({ dynamic: true }) });
+                                await Message.edit({ embeds: [embed3] });
+                                button
+                                    .reply({
+                                        content: "> **❌ Denied!** | Ban aborted!",
+                                        ephemeral: true,
+                                    })
+                                    .catch((e) => {
+                                        log(e);
+                                    }
+                                    );
+                                break;
+                        }
+                    });
+                    col.on("end", async (button) => {
+                        button = new MessageActionRow().addComponents(
+                            new MessageButton()
+                                .setStyle("SUCCESS")
+                                .setLabel("Ban")
+                                .setCustomId("ban")
+                                .setDisabled(true),
+                            new MessageButton()
+                                .setStyle("DANGER")
+                                .setLabel("Revoke")
+                                .setCustomId("clear")
+                                .setDisabled(true)
+                        );
+                        await Message.edit({ components: [button] });
+
+                    });
+                });
+                } catch(e) {
+                    log(e);
+                }
+        }
+            else {
                 try {
-                let fetching = await client.users.fetch(args[0]);
-                if(!fetching) {
-                    return msg.channel.send('Unable to find user! Check the ID and try again!');
-                }
-                msg.guild.members.ban(fetching.id, {reason: reason});
-                const embed = new Discord.MessageEmbed()
-                    .setColor('RED')
-                    .setThumbnail(msg.author.displayAvatarURL({dynamic: true}))
-                    .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL({dynamic: true})})
-                    .setTitle('User Banned!')
-                    .setDescription(`**User:** ${fetching.tag} - ${fetching.id}\n**Banned by:** ${msg.author.tag}\n**Reason:** ${reason}`)
-                    .setTimestamp();
-                    return msg.channel.send({embeds: [embed]});
-                } catch(error) {
-                    log(error);
-                }
-            }
-                if (user) {
-                    if (user.id === msg.guild.ownerId) {
-                        msg.channel.send('You cannot ban the owner of the server!');
-                        return;
+                    let fetchedUser = await client.users.fetch(args[0]);
+                    if (!fetchedUser) {
+                        return message.channel.send('Unable to find user! Check the ID and try again!');
                     }
+                    let button = new MessageActionRow().addComponents(
+                        new MessageButton()
+                            .setStyle("SUCCESS")
+                            .setLabel("Ban")
+                            .setCustomId("rel"),
+                        new MessageButton()
+                            .setStyle("DANGER")
+                            .setLabel("Revoke")
+                            .setCustomId("del")
+                    );
+                    let embed1 = new MessageEmbed()
+                        .setColor('#0099ff')
+                        .setTitle('Ban Pending')
+                        .setDescription(`**User:** <@${fetchedUser.id}>\n**Moderator:** <@${message.author.id}>\n**Reason:** ${reason}`)
+                        .setTimestamp()
+                        .setFooter({ text: 'Dragon Serenity Ban System', icon_url: message.author.displayAvatarURL({ dynamic: true }) });
+                    return await message.channel.send({ embeds: [embed1], components: [button] }).then(async (Message) => {
+                        const filter = (i) => i.user.id === message.author.id;
+                        let col = await Message.createMessageComponentCollector({
+                            filter,
+                            time: 1200000,
+                        });
 
-                    if (user.id === client.user.id) {
-                        msg.channel.send('I cannot ban myself!');
-                        return;
-                    }
-                    msg.guild.members.ban(user.id, {reason: reason});
-                    const embed = new Discord.MessageEmbed()
-                        .setColor('RED')
-                        .setThumbnail(msg.author.displayAvatarURL({dynamic: true}))
-                        .setAuthor({name: msg.author.tag, iconURL: msg.author.displayAvatarURL({dynamic: true})})
-                        .setTitle('User Banned!')
-                        .setDescription(`**User:** ${user.user.tag} - ${user.id}\n**Banned by:** ${msg.author.tag} - ${msg.author.id}\n**Reason:** ${reason}`)
-                        .setTimestamp();
-                        return msg.channel.send({embeds: [embed]});
-            }
-         } catch (error) {
-                log(error);
-                return msg.channel.send('An error occurred! Please try again!');
-            }
+                        col.on("collect", async (button) => {
+                            if (button.user.id !== message.author.id) return;
+                            switch (button.customId) {
+                                case "rel":
+                                    col.stop(true);
+                                    await message.guild.members.ban(fetchedUser.id, { reason: reason });
+                                    let embed2 = new MessageEmbed()
+                                        .setColor('#0099ff')
+                                        .setTitle('Ban executed!')
+                                        .setDescription(`**Successfully banned User.**\n**User:** <@${fetchedUser.id}>\n**Moderator:** <@${message.author.id}>\n**Reason:** ${reason}`)
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Dragon Serenity Ban System', icon_url: message.author.displayAvatarURL({ dynamic: true }) });
+                                    await Message.edit({ embeds: [embed2] });
+                                    button
+                                        .reply({
+                                            content: "> **✅ Success** | Ban executed!",
+                                            ephemeral: true,
+                                        })
+                                        .catch((e) => {
+                                            log(e);
+                                            return;
+                                        });
+                                    break;
+                                case "del":
+                                    col.stop(true);
+                                    let embed3 = new MessageEmbed()
+                                        .setColor('#0099ff')
+                                        .setTitle('🆗 Cleared')
+                                        .setDescription(`Ban has been aborted!\n**User:** <@${fetchedUser.id}>`)
+                                        .setTimestamp()
+                                        .setFooter({ text: 'Dragon Serenity Ban System', icon_url: message.author.displayAvatarURL({ dynamic: true }) });
+                                    await Message.edit({ embeds: [embed3] });
+                                    button
+                                        .reply({
+                                            content: "> **❌ Denied!** | Ban aborted!",
+                                            ephemeral: true,
+                                        })
+                                        .catch((e) => {
+                                            log(e);
+                                            return;
+                                        }
+                                        );
+                                    break;
+                            }
+                        });
+                        col.on("end", async (button) => {
+                            button = new MessageActionRow().addComponents(
+                                new MessageButton()
+                                    .setStyle("SUCCESS")
+                                    .setLabel("Ban")
+                                    .setCustomId("ban")
+                                    .setDisabled(true),
+                                new MessageButton()
+                                    .setStyle("DANGER")
+                                    .setLabel("Revoke")
+                                    .setCustomId("clear")
+                                    .setDisabled(true)
+                            );
+                            return await Message.edit({ components: [button] });
+
+                        });
+                    });
+                } catch (e) {
+                    log(e);
+                    return;
+                }
+        }
+            } catch (e) {
+            log(e);
+            return
+        }
     }
-};
+}
