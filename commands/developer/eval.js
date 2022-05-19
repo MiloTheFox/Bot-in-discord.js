@@ -17,10 +17,6 @@ module.exports = {
                 msg.channel.send('You need to provide some code!');
                 return;
             }
-            if (command.includes('client.token') || command.includes('process.env.TOKEN')) {
-                msg.channel.send('You cannot execute commands containing .token!');
-                return;
-            }
             const evaled = eval(command);
             const type = typeof evaled;
             const typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
