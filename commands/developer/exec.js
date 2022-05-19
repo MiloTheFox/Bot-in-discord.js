@@ -1,7 +1,7 @@
 const { MessageEmbed } = require('discord.js');
 const { exec } = require('child_process');
 
-
+// initialize the command
 module.exports = {
     name: 'exec',
     description: 'Executes a command in the terminal.',
@@ -14,11 +14,9 @@ module.exports = {
                 return;
             }
             if (args.length < 1) {
-                msg.channel.send('You need to provide an Command to execute!');
+                msg.channel.send('You need to provide some code!');
                 return;
             }
-
-            // execute the command
             exec(args.join(' '), (error, stdout, stderr) => {
                 if (!error) {
                     const embed = new MessageEmbed()
@@ -28,6 +26,7 @@ module.exports = {
                     .setThumbnail(msg.author.displayAvatarURL({dynamic: true}))
                     .setDescription(`**Input:** \`\`\`js\n${args.join(' ')}\n\`\`\`\n**Output:**\`\`\`js\n${stdout}\n\`\`\``)
                     .setTimestamp();
+                    // send the embed
                     return msg.reply({embeds: [embed]});
                 } else {
                     const embed = new MessageEmbed()
