@@ -20,7 +20,7 @@ module.exports = {
                 }
                 return array;
             }
-            let words = shuffle(['technoblade', 'programminghorror', 'memes'])
+            let words = shuffle(['technoblade', 'programminghorror', 'memes', 'cursedcomments'])
             let random = Math.floor(Math.random() * words.length);
             let word = words[random];
             got(`https://www.reddit.com/r/${word}/random/.json`).then(response => {
@@ -35,6 +35,15 @@ module.exports = {
                 let downvotes = content[0].data.children[0].data.downs;
                 let comments = content[0].data.children[0].data.num_comments;
                 let uploadedutc = content[0].data.children[0].data.created_utc;
+                // if the meme is NSFW, don't send it
+                if (content[0].data.children[0].data.over_18) {
+                    return message.channel.send('There was an error fetching a meme.');
+                }
+                // if the picture has a video, don't send it
+                if (content[0].data.children[0].data.media) {
+                    return message.channel.send('There was an error fetching a meme.');
+                }
+
                 let memeEmbed = new Discord.MessageEmbed()
                     .setColor('#0099ff')
                     .setTitle(`${memeTitle}`)
