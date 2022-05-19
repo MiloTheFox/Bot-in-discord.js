@@ -14,12 +14,12 @@ client.events = new Collection();
 
 client.on('ready', () => {
     console.log(`${client.user.tag} is online!`);
-    client.user.setActivity(`ds!ping`, { type: 'PLAYING' });
+    client.user.setActivity(`${config.prefix}ping`, { type: 'PLAYING' });
 });
 
-// load the files
 client.categories = fs.readdirSync('./commands');
 
+// load the files
 ['command'].forEach(handler => {
     require(`./handler/${handler}`)(client);
 });
