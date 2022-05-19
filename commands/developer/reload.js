@@ -6,7 +6,7 @@ module.exports = {
     usage: 'ds!reload <category> <commandname>',
     run: async(client, message, args) => {
     try{
-    if (message.author.id !== '705557092802625576') return;
+    if (message.author.id !== '705557092802625576') return message.reply('You are not the Bot Owner!');
     if (!args[0]) return message.reply('Please provide a category!');
     if (!args[1]) return message.reply('Please provide the command name!');
 
@@ -18,7 +18,7 @@ module.exports = {
       client.commands.delete(command);
       const pull = require(`../../commands/${category}/${command}.js`);
       client.commands.set(command, pull);
-      console.log(`Reloaded Command ${command}`);
+      console.log(`Reloaded ${command} from ${category}`);
       return message.channel.send(`Reload on **${command}** completed!`);
     } catch(error) {
       message.channel.send(`An unexpected Error occurred whilst trying to reload **${command}**: \`${error.message}\``);
