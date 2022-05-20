@@ -1,8 +1,8 @@
 module.exports = {
-    name: 'massban',
-    description: 'Mass bans all users from the server',
-    usage: 'ds!massban <user1> <user2> ... <reason>',
-    aliases: ['mb'],
+    name: 'massunban',
+    description: 'Unbans all provided Users from the server',
+    usage: 'ds!massunban <user1> <user2> ... <reason>',
+    aliases: ['mub'],
     run: async (client, msg, args) => {
         try {
             if (!msg.member.permissions.has('BAN_MEMBERS')) return msg.channel.send('Missing Permission: `BAN_MEMBERS`');
@@ -11,16 +11,16 @@ module.exports = {
             if (!reason) reason = 'No reason provided';
             let users = args.slice(0, args.length - 1);
             for (let i = 0; i < users.length; i++) {
-                let user = await client.users.fetch(users[i]);
+                setTimeout(async () => {
+                    let user = await client.users.fetch(users[i]);
                     if (!user) users - 1;
                     const banList = await msg.guild.fetchBans();
-                    if (banList.has(user.id)) users--;
+                    if (!banList.has(user.id)) users--;
                     if (!user) users--;
-                setTimeout(async () => {
-                    await msg.guild.members.ban(user, { days: 7, reason: reason });
+                    await msg.guild.members.unban(user, { reason: reason });
                 }, i * 1000);
             }
-            return msg.channel.send(`Successfully banned ${users.length} users!`);
+            return msg.channel.send(`Successfully unbanned ${users.length} users!`);
         } catch (error) {
             console.log(error);
             return msg.channel.send('An error occurred! Please try again!');
