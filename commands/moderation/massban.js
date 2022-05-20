@@ -11,9 +11,12 @@ module.exports = {
             if (!reason) reason = 'No reason provided';
             let users = args.slice(0, args.length - 1);
             for (let i = 0; i < users.length; i++) {
-                setTimeout(async () => {
-                    let user = await client.users.fetch(users[i]);
+                let user = await client.users.fetch(users[i]);
+                    if (!user) users - 1;
+                    const banList = await msg.guild.fetchBans();
+                    if (banList.has(user.id)) users--;
                     if (!user) users--;
+                setTimeout(async () => {
                     await msg.guild.members.ban(user, { days: 7, reason: reason });
                 }, i * 1000);
             }
