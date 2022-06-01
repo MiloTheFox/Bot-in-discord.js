@@ -1,6 +1,4 @@
 const log = (arg) => console.log(arg);
-
-// import the necessary modules
 const { MessageEmbed } = require('discord.js');
 
 module.exports = {
@@ -29,7 +27,7 @@ module.exports = {
                 try {
                     let fetching = await client.users.fetch(args[0]);
                     const userInfo = new MessageEmbed()
-                        .setAuthor({ name: `${fetching.tag}`, iconURL: fetching.avatarURL({ dynamic: true }) })
+                        .setAuthor({ name: `${fetching.tag}`, iconURL: fetching.displayAvatarURL({ dynamic: true }) })
                         .setColor('BLUE')
                         .setThumbnail(fetching.displayAvatarURL({ dynamic: true }))
                         .setTitle('User Info')
