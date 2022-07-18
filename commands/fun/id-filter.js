@@ -9,11 +9,11 @@ module.exports = {
     run: async (client, message, args) => {
         try{
             if(!args[0]) return message.channel.send('Please provide some text to extract ID\'s from.');
-            const text = args.join(' ');
-            const ids = text.match(/\d{17,19}/g);
+            let text = args.join(' ');
+            let ids = text.match(/\d{17,19}/g);
             if(!ids) return message.channel.send('No ID\'s found.');
-            const idList = ids.join('\n');
-            const idListEmbed = new Discord.MessageEmbed()
+            let idList = ids.join('\n');
+            let idListEmbed = new Discord.MessageEmbed()
                 .setTitle('Extracted ID\'s')
                 .setDescription(`${idList}`)
                 .setColor('#ff0000')
