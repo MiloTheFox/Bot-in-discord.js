@@ -8,13 +8,13 @@ module.exports = {
     usage: "ds!howgay (optional: Member)",
     run: async (client, message, args) => {
         try{
-            const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
+            let member = message.mentions.members.first() || message.guild.members.cache.get(args[0]);
             if(!member) {
                 let fetching = await client.users.fetch(args[0]);
                 if (!fetching) {
                         return msg.channel.send('Unable to find user! Check the ID and try again!');
                     }
-                const embed = new Discord.MessageEmbed()
+                let embed = new Discord.MessageEmbed()
                     .setColor('#0099ff')
                     .setThumbnail(fetching.displayAvatarURL({dynamic: true}))
                     .setAuthor({name: message.author.tag, iconURL: message.author.displayAvatarURL({dynamic: true})})
@@ -23,7 +23,7 @@ module.exports = {
                     .setTimestamp()
                     return message.channel.send({embeds: [embed]})
             }
-            const embed = new Discord.MessageEmbed()
+            let embed = new Discord.MessageEmbed()
                 .setColor('#0099ff')
             	.setThumbnail(member.user.displayAvatarURL({dynamic: true}))
                 .setAuthor({name: `${member.user.tag}`, iconURL: member.user.displayAvatarURL({dynamic: true})})
