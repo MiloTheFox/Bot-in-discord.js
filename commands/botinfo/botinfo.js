@@ -1,46 +1,135 @@
-const { MessageEmbed } = require('discord.js');
-const os = require('os');
-const { version } = require('discord.js');
-const process = require('process');
+const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
+const process = require("process");
 const moment = require('moment');
 
 module.exports = {
-    name: 'about',
-    aliases: ['botinfo', 'bot-stats'],
-    description: 'Prints the bot\'s info (name, id, etc.) alongside the os architecture and node version',
-    run: async(client, message, args) => {
-        try{
-            const toTimestamp = (strDate) => {  
-                const dt = moment(strDate).unix();  
-                return dt;  
+    name: 'static',
+    description: "Provides Information about the Bot",
+    aliases: ["statistics", "i", "stats", "about", "botinfo", "info"],
+    utilisation: '{prefix}static',
+
+    run: async (client, message) => {
+        try {
+            const toTimestamp = (strDate) => {
+                const dt = moment(strDate).unix().toString();
+                return dt;
             };
-        const bot = client.user;
-        const botId = bot.id;
-        const botTag = bot.tag;
-        const botAvatar = bot.displayAvatarURL({ dynamic: true });
-        const botCreatedAt = bot.createdAt;
-        const botCreatedAtUnix = bot.createdTimestamp;
-        const osArch = os.arch();
-        const osRelease = os.release();
-        const osType = os.type();
-        const osLoadavg = os.loadavg();
-        const osTotalmem = os.totalmem();
-        const osFreemem = os.freemem();
-        const osUptime = os.uptime();
-        const nodeVersion = process.version;
-        const nodeArch = process.arch;
-        const discordJsVersion = version;
-        const embed = new MessageEmbed()
-            .setColor('#0099ff')
-            .setThumbnail(botAvatar)
-            .setAuthor({name: botTag, iconURL: botAvatar})
-            .setTitle('About')
-            .setDescription(`**Bot Tag:** ${botTag}**\nBot ID:** ${botId}\n**Bot Created at Unix:** **<t:${toTimestamp(moment.utc(bot.createdTimestamp))}:F>**\n**OS Architecture:** ${osArch}\n**OS Release:** ${osRelease}\n**OS Type:** ${osType}\n**Node Architecture:** ${nodeArch}\n**Discord.js Version:** ${discordJsVersion}\n**CPU Usage:** ${(process.cpuUsage().user / 1024 / 1024).toFixed(2)}%\n**RAM Usage:** ${(process.memoryUsage(). heapUsed / 1024 / 1024).toFixed(2)} MB`)
-            .setTimestamp()
-            .setFooter({text: `Made with ❤️ by ${client.users.cache.get("705557092802625576").tag}`});
-        return message.channel.send({ embeds: [embed] });
-        } catch(err){
-            console.log(err);
+            let created = toTimestamp(client.user.createdTimestamp);
+
+            let button = new MessageActionRow().addComponents(
+                new MessageButton()
+                    .setStyle("SUCCESS")
+                    .setLabel("Update")
+                    .setCustomId("rel"),
+                new MessageButton()
+                    .setStyle("DANGER")
+                    .setLabel("Delete")
+                    .setCustomId("del"))
+
+            let embed = new MessageEmbed()
+                .setColor("BLUE")
+                .setTimestamp()
+                .setThumbnail(client.user.displayAvatarURL())
+                .setTitle(client.user.username)
+                .setFooter({ text: 'Music Bot Commands', iconURL: message.author.avatarURL({ dynamic: true }) })
+                .setDescription(`**
+            > Guilds: \`${client.guilds.cache.size}\`
+            > Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`
+            > Channels: \`${client.channels.cache.size}\`
+            > Commands: \`${client.commands.size}\`
+            ❯ Uptime: <t:${Math.round(client.readyTimestamp / 1000)}:R>
+            ❯ Created: <t:${created}:R> - <t:${created}:F>
+            ❯ Node: \`${process.version}\`
+            ❯ Discord.js: \`${require('discord.js').version}\`
+            ❯ OS: \`${process.platform}\`	
+            ❯ CPU: \`${process.arch}\`
+            ❯ RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`
+            **`)
+                .addField("Invite Bot", `**[Add Me](https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=1084516334400)**`, true)
+            message.channel.send({ embeds: [embed], components: [button] }).then(async Message => {
+
+                let filter = i => i.user.id === message.author.id
+                let col = await Message.createMessageComponentCollector({ filter, time: 1200000 });
+
+                col.on('collect', async (button) => {
+                    if (button.user.id !== message.author.id) return
+
+                    switch (button.customId) {
+                        case 'rel':
+                            let embedd = new MessageEmbed()
+                                .setColor("BLUE")
+                                .setTimestamp()
+                                .setThumbnail(client.user.displayAvatarURL())
+                                .setTitle(client.user.username)
+                                .setFooter({ text: 'Dragon Serengeti - Made by ' + client.users.cache.get('705557092802625576').tag, iconURL: client.users.cache.get('705557092802625576').avatarURL({ dynamic: true }) })
+                                .setDescription(`**
+                                > Guilds: \`${client.guilds.cache.size}\`
+                                > Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`
+                                > Channels: \`${client.channels.cache.size}\`
+                                > Commands: \`${client.commands.size}\`
+                                ❯ Uptime: <t:${Math.round(client.readyTimestamp / 1000)}:R>
+                                ❯ Created: <t:${created}:R> - <t:${created}:F>
+                                ❯ Node: \`${process.version}\`
+                                ❯ Discord.js: \`${require('discord.js').version}\`
+                                ❯ OS: \`${process.platform}\`	
+                                ❯ CPU: \`${process.arch}\`
+                                ❯ RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`
+                                **`)
+                                .addField("Invite Bot", `**[Add Me](https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=1084516334400)**`, true)
+
+                            await Message.edit({ embeds: [embedd] })
+                            button.reply({ content: "> **✅ Success:** Bot statistics updated!", ephemeral: true }).catch(e => { });
+
+                            break
+                        case 'del':
+                            col.stop(true)
+                            await message.delete().catch(e => { });
+                            await Message.delete().catch(e => { });
+                            button.reply({ content: "> **✅ Success** Bot statistic deleted!", ephemeral: true }).catch(e => { });
+                            break
+
+                    }
+                })
+                col.on('end', async (button) => {
+
+                    button = new MessageActionRow().addComponents(
+                        new MessageButton()
+                            .setStyle("SUCCESS")
+                            .setLabel("Update")
+                            .setCustomId("rel")
+                            .setDisabled(true),
+                        new MessageButton()
+                            .setStyle("DANGER")
+                            .setLabel("Delete")
+                            .setCustomId("del")
+                            .setDisabled(true))
+
+                    let embedd = new MessageEmbed()
+                        .setColor("BLUE")
+                        .setTimestamp()
+                        .setThumbnail(client.user.displayAvatarURL())
+                        .setTitle(client.user.username + " Command Time Ended")
+                        .setFooter({ text: 'Dragon Serengeti - Made by ' + client.users.cache.get('705557092802625576').tag, iconURL: client.users.cache.get('705557092802625576').avatarURL({ dynamic: true }) })
+                        .setDescription(`**
+                        > Guilds: \`${client.guilds.cache.size}\`
+                        > Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`
+                        > Channels: \`${client.channels.cache.size}\`
+                        > Commands: \`${client.commands.size}\`
+                        ❯ Uptime: <t:${Math.round(client.readyTimestamp / 1000)}:R>
+                        ❯ Created: <t:${created}:R> - <t:${created}:F>
+                        ❯ Node: \`${process.version}\`
+                        ❯ Discord.js: \`${require('discord.js').version}\`
+                        ❯ OS: \`${process.platform}\`	
+                        ❯ CPU: \`${process.arch}\`
+                        ❯ RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
+                        `)
+                        .addField("Invite Bot", `**[Add Me](https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=1084516334400)**`, true)
+
+                    await Message.edit({ embeds: [embedd], components: [button] })
+                })
+            }).catch(e => { console.log(e) });
+        } catch (e) {
+            console.log(e)
         }
-    }
+    },
 };
