@@ -12,7 +12,7 @@ module.exports = {
             let member = msg.mentions.members.first();
             if (!args[0]) {
                 member = msg.member;
-                const authorEmbed = new MessageEmbed()
+                let authorEmbed = new MessageEmbed()
                     .setAuthor({ name: `${member.user.tag}`, iconURL: member.displayAvatarURL({ dynamic: true }) })
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                     .setColor('BLUE')
@@ -29,7 +29,7 @@ module.exports = {
                     .setTimestamp();
                 return msg.channel.send({ embeds: [authorEmbed] });
             } else if (member) {
-                const memberEmbed = new MessageEmbed()
+                let memberEmbed = new MessageEmbed()
                     .setAuthor({ name: `${member.user.tag}`, iconURL: member.displayAvatarURL({ dynamic: true }) })
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                     .setColor('BLUE')
@@ -48,7 +48,7 @@ module.exports = {
             } else {
                 try {
                     member = await msg.guild.members.fetch(args[0]);
-                    const userEmbed = new MessageEmbed()
+                    let userEmbed = new MessageEmbed()
                         .setAuthor({ name: `${member.user.tag}`, iconURL: member.displayAvatarURL({ dynamic: true }) })
                         .setThumbnail(member.displayAvatarURL({ dynamic: true }))
                         .setColor('BLUE')
@@ -66,7 +66,7 @@ module.exports = {
                     return msg.channel.send({ embeds: [userEmbed] });
                 } catch (err) {
                     await client.users.fetch(args[0]).then((fetching) => {
-                        const userInfo = new MessageEmbed()
+                        let userInfo = new MessageEmbed()
                             .setAuthor({ name: `${fetching.tag}`, iconURL: fetching.displayAvatarURL({ dynamic: true }) })
                             .setColor('BLUE')
                             .setThumbnail(fetching.displayAvatarURL({ dynamic: true }))
