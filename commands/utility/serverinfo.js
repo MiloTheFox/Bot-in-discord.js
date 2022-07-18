@@ -6,7 +6,7 @@ module.exports = {
     usage: 'ds!serverinfo',
     run: async(client, msg, args) => {
         try {
-        const serverinfo = new Discord.MessageEmbed()
+        let serverinfo = new Discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle(`${msg.guild.name} Server Information`)
             .setThumbnail(msg.guild.iconURL({dynamic: true}))
@@ -14,7 +14,7 @@ module.exports = {
             .addField('Server ID', `${msg.guild.id}`)
             .addField('Server Creation Date', `**<t:${Math.round(msg.guild.createdAt.getTime() / 1000, 0)}:F>**`)
             .addField('Server Owner', `<@!${msg.guild.ownerId}> - \`(${msg.guild.ownerId})\``)	
-            .addField('Server Region', `${msg.guild.region}`)
+            .addField('Server Region', `${msg.guild.preferredLocale}`)
             .addField('Server Members', `${msg.guild.memberCount}`)
             .addField('Server Channels', `${msg.guild.channels.cache.size}`)
             .addField('Server Roles', `${msg.guild.roles.cache.size}`)
