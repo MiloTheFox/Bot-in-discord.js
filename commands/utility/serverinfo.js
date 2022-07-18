@@ -12,7 +12,7 @@ module.exports = {
             .setThumbnail(msg.guild.iconURL({dynamic: true}))
             .addField('Server Name', `${msg.guild.name}`)
             .addField('Server ID', `${msg.guild.id}`)
-            .addField('Server Creation Date', `**<t:${Math.round(msg.guild.createdAt.getTime() / 1000, 0)}:F>**`)
+            .addField('Server Creation Date', `**<t:${Math.round(parseInt(msg.guild.createdTimestamp) / 1000)}:F>**`)
             .addField('Server Owner', `<@!${msg.guild.ownerId}> - \`(${msg.guild.ownerId})\``)	
             .addField('Server Region', `${msg.guild.preferredLocale}`)
             .addField('Server Members', `${msg.guild.memberCount}`)
