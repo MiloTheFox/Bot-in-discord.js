@@ -1,10 +1,9 @@
 const { MessageEmbed } = require('discord.js');
 const { exec } = require('child_process');
 
-
 module.exports = {
     name: 'exec',
-    description: 'Executes a command in the terminal.',
+    description: '(Dev only) Executes a command in the terminal.',
     aliases: ['exec_command', 'exec_cmd', 'execute_command', 'execute_cmd', 'run'],
     usage: 'ds!exec <command>',
     run: async (client, msg, args) => {
