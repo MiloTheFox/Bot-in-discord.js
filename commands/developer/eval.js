@@ -4,11 +4,11 @@ const Buffer = require('buffer').Buffer;
 
 module.exports = {
     name: 'eval',
-    description: 'Evaluates JavaScript Code.',
-    usage: 'ds!eval <js-code>',
+    description: '(Dev only) Evaluates JavaScript Code.',
+    usage: 'ds!eval <code>',
     run: async (client, msg, args) => {
         try {
-            const command = args.join(' ');
+            let command = args.join(' ');
             if (msg.author.id !== '705557092802625576') {
                 msg.channel.send('You are not the Bot Owner!');
                 return;
@@ -17,10 +17,14 @@ module.exports = {
                 msg.channel.send('You need to provide some code!');
                 return;
             }
-            const evaled = eval(command);
-            const type = typeof evaled;
-            const typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
-            const embed = new Discord.MessageEmbed()
+            if (command.includes('.token') || command.includes('.TOKEN')) {
+                msg.channel.send('You cannot execute commands containing .token!');
+                return;
+            }
+            let evaled = eval(command);
+            let type = typeof evaled;
+            let typeCapitalized = type.charAt(0).toUpperCase() + type.slice(1);
+            let embed = new Discord.MessageEmbed()
             embed.setDescription(`**Output:**\`\`\`js\n${inspect(evaled, { depth: 2 })}\`\`\`\n**Input:** \`\`\`js\n${command}\n\`\`\``)
             if (embed.description.length > 4096) {
                 embed.setColor('BLUE')
@@ -31,10 +35,10 @@ module.exports = {
                 embed.addFields(
                     { name: 'Type:', value: `\`\`\`js\n${typeCapitalized}\n\`\`\``, inline: false }, { name: "Time:", value: `\`\`\`js\n${Date.now() - msg.createdTimestamp}ms\n\`\`\``, inline: false })
                 embed.setTimestamp()
-                const file = Buffer.from(inspect(evaled, { depth: 2 }));
+                let file = Buffer.from(inspect(evaled, { depth: 2 }));
                 return msg.reply({ embeds: [embed], files: [{ attachment: file, name: 'output.js' }] });
             } else {
-                const embed2 = new Discord.MessageEmbed()
+                let embed2 = new Discord.MessageEmbed()
                     .setColor('BLUE')
                     .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
@@ -47,7 +51,7 @@ module.exports = {
             }
         } catch (error) {
             console.log(error);
-            const embed = new Discord.MessageEmbed()
+            let embed = new Discord.MessageEmbed()
                 .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
                 .setColor('RED')
                 .setTitle('Error ocurred!')
