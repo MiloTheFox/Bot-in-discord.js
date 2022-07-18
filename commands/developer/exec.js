@@ -18,7 +18,6 @@ module.exports = {
             }
             exec(args.join(' '), (error, stdout, stderr) => {
                 if (!error) {
-                    // embed
                     let embed = new MessageEmbed()
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
                     .setColor('BLUE')
