@@ -1,27 +1,28 @@
 module.exports = {
-    name: 'pause',
-    description: 'Pauses the music.',
-    usage: 'ds!pause',
-    run: async(client, msg, args) => {
-        try{
-            if(!msg.member.permissions.has('CONNECT')) {
-                msg.channel.send('You do not have the permission to use this command!');
-                return;
-            }
-            if (!msg.guild.me.permissions.has('SPEAK')) {
-                msg.channel.send('I do not have the permission to use this command!');
-                return;
-            }
-            if (!client.queue[msg.guild.id]) {
-                msg.channel.send('There is nothing playing!');
-                return;
-            }
-            if(client.queue[msg.guild.id].playing) {
-                client.queue[msg.guild.id].playing = false;
-                return msg.channel.send('Music paused!');
-            }
-        } catch(err) {
-            console.log(err);
+    name: "pause",
+    aliases: [],
+    description: "Pauses the Music",
+    utilisation: "{prefix}pause",
+    voiceChannel: true,
+
+    run: async (client, message) => {
+        try {
+            let queue = client.player.getQueue(message.guild.id);
+
+            if (!queue || !queue.playing)
+                return message.channel.send({
+                    content: `${message.author}, There is no music currently playing!. ❌`,
+                });
+
+            let success = queue.setPaused(true);
+
+            return message.channel.send({
+                content: success
+                    ? `The currently playing music named **${queue.current.title}** has stopped ✅`
+                    : `${message.author}, Something went wrong. ❌`,
+            });
+        } catch (e) {
+            console.log(e);
         }
-    }
+    },
 };
