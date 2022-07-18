@@ -1,77 +1,63 @@
-const Spotify = require('node-spotify-api');
-const Discord = require('discord.js');
-
-const spotify = new Spotify({
-    id: '',
-    secret: ''
-});
+const { QueryType } = require("discord-player");
 
 module.exports = {
-    name: 'play',
-    description: 'Plays a song from the Spotify API.',
-    usage: 'ds!play <song>',
-    run: async(client, msg, args) => {
-        try{
-            
-        if (!msg.member.permissions.has('SPEAK')) {
-            msg.channel.send('You do not have the permission to use this command!');
-            return;
-        }
+    name: "play",
+    aliases: ["p"],
+    description: "Plays Music",
+    utilisation: "{prefix}play [song name/URL]",
+    voiceChannel: true,
 
-        if (!msg.guild.me.permissions.has('SPEAK')) {
-            msg.channel.send('I do not have the permission to use this command!');
-            return;
-        }
+    run: async (client, message, args) => {
+        try {
+            if (!args[0])
+                return message.channel.send({
+                    content: `${message.author}, Write the name of the music you want to search. ❌`,
+                });
 
-        if(!msg.guild.me.permissions.has('CONNECT')) {
-            return msg.channel.send('I do not have the permission to join your voice channel!');
-        }
-            
-        if (!args[0]) {
-            msg.channel.send('Please provide a song to play!');
-            return;
-        }
-            spotify.search({
-            type: 'track',
-            query: args.join(' ')
-        }, (error, data) => {
-            if (error) {
-                console.log(error);
-                return;
-            }
-                
-            if (!data.tracks.items[0]) {
-                msg.channel.send('Unable to find the song!');
-                return;
-            }
-            const track = data.tracks.items[0];
-            const trackURL = track.external_urls.spotify;
-            const trackName = track.name;
-            const trackAlbum = track.album.name;
-            const trackArtist = track.artists[0].name;
-            const trackImage = track.album.images[0].url;
-            const trackPreview = track.preview_url;
-            const trackDuration = track.duration_ms;
-            const trackDurationMinutes = Math.floor(trackDuration / 60000);
-            const trackDurationSeconds = Math.floor((trackDuration % 60000) / 1000);
-            const trackDurationFormatted = `${trackDurationMinutes}:${trackDurationSeconds}`;
-            const trackEmbed = new Discord.MessageEmbed()
-                .setColor('GREEN')
-                .setTitle(`Now Playing: ${trackName}`)
-                .setURL(trackURL)
-                .setThumbnail(trackImage)
-                .addField('Album', trackAlbum, true)
-                .addField('Artist', trackArtist, true)
-                .addField('Duration', trackDurationFormatted, true)
-                .setFooter({text: 'Use ds!skip to skip the song.'})
-                .setTimestamp();
-            msg.channel.send({ embeds: [trackEmbed] });
-            msg.member.voice.channel.join().then(connection => {
-                connection.play(trackPreview);
+            let res = await client.player.search(args.join(" "), {
+                requestedBy: message.member,
+                searchEngine: QueryType.AUTO,
             });
-        });
-    } catch(err) {
-        console.log(err);
-    }
-    }
+
+            if (!res || !res.tracks.length)
+                return message.channel.send({
+                    content: `${message.author}, No results found! ❌`,
+                });
+
+            let queue = await client.player.createQueue(message.guild, {
+                metadata: message.channel,
+            });
+
+            try {
+                if (!queue.connection)
+                    await queue.connect(message.member.voice.channel);
+            } catch {
+                await client.player.deleteQueue(message.guild.id);
+                return message.channel.send({
+                    content: `${message.author}, I can't join audio channel. ❌`,
+                });
+            }
+
+            await message.channel.send({
+                content: `Your ${res.playlist ? "Playlist" : "Track"} Loading... 🎧`,
+            });
+
+            if (client.config.opt.selfDeaf === false) {
+                let channel = message.member.voice.channel;
+                let { joinVoiceChannel } = require("@discordjs/voice");
+                let connection = joinVoiceChannel({
+                    channelId: channel.id,
+                    guildId: channel.guild.id,
+                    adapterCreator: channel.guild.voiceAdapterCreator,
+                    selfDeaf: true,
+                });
+            }
+
+            res.playlist ? queue.addTracks(res.tracks) : queue.addTrack(res.tracks[0]);
+
+            if (!queue.playing) await queue.play();
+        } catch (e) {
+            console.log(e);
+        }
+    },
 };
