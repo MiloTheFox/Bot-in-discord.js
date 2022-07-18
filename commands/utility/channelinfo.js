@@ -18,7 +18,7 @@ module.exports = {
                 .setThumbnail(msg.guild.iconURL({ dynamic: true }))
                 .addField('Channel Name', `${msg.channel.name}`)
                 .addField('Channel ID', `${msg.channel.id}`)
-                .addField('Channel Creation Date', `**<t:${Math.round(parseInt(msg.channel.createdTimestamp))}:F>**`)
+                .addField('Channel Creation Date', `**<t:${Math.round(parseInt(msg.channel.createdTimestamp) / 1000)}:F>**`)
                 .addField('Channel Type', `${msg.channel.type}`)
                 .addField('Channel Topic', `${msg.channel.topic}`)
                 .addField('Channel Position', `${msg.channel.position}`)
