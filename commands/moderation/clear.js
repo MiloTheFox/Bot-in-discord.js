@@ -5,7 +5,6 @@ module.exports = {
     aliases: ['purge', 'prune'],
     run: async (client, msg, args) => {
         try {
-            // check the permission of the bot and the message author on 'manage messages'
             if (!msg.member.permissions.has('MANAGE_MESSAGES') && !msg.guild.me.permissions.has('MANAGE_MESSAGES')) {
                 return msg.channel.send('Missing Permission: `MANAGE_MESSAGES`');
             }
@@ -16,9 +15,9 @@ module.exports = {
             const amount = parseInt(args[0]);
             await msg.channel.bulkDelete(amount + 1);
             return msg.channel.send(`Successfully deleted ${amount} messages!`);
-            } catch (error) {
-                console.log(error);
-                return msg.channel.send('An error occurred! Please try again!');
+        } catch (error) {
+            console.log(error);
+            return msg.channel.send('An error occurred! Please try again!');
         }
     }
 };
