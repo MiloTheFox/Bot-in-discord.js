@@ -1,6 +1,5 @@
 module.exports = {
         TOKEN: '', // Discord Token
-        px: ['ds!', 'Ds!', '<@957081302815871016>', '<@!957081302815871016>'],
         playing: 'Music',
 
     opt: {
