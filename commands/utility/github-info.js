@@ -1,28 +1,26 @@
 const log = (arg) => console.log(arg);
 
-const { MessageEmbed } = require('discord.js');
+const Discord = require('discord.js');
 const fetch = require('node-fetch');
-const moment = require('moment');
+const moment = require('moment')
 
 module.exports = {
     name: 'github-info',
     description: 'Gets information about a github user.',
     usage: 'ds!github-info <user>',
-    aliases: ['gh-info'],
     run: async(client, msg, args) => {
         try{
             let user = args[0];
-            const github = await fetch(`https://api.github.com/users/${user}`).then(res => res.json());
+            let github = await fetch(`https://api.github.com/users/${user}`).then(res => res.json());
             if (github.error) {
                 return msg.channel.send('Unable to find user! Check your Input and try again!');
             }
-            const embed = new MessageEmbed()
+            let embed = new Discord.MessageEmbed()
                 .setColor('GREEN')
                 .setThumbnail(github.avatar_url)
                 .setAuthor({name: `${github.name}`, iconURL: github.avatar_url})
                 .setTitle('Github-Info')
                 .addFields(
-
                     {name: 'Name', value: `${github.name}`, inline: true},
                     {name: 'Company', value: `${github.company}`, inline: true},
                     {name: 'Location', value: `${github.location}`, inline: true},
