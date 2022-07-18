@@ -12,7 +12,7 @@ module.exports = {
             else if (isNaN(args[0])) return msg.channel.send('Please specify a valid number!');
             else if (args[0] > 100) return msg.channel.send('Please specify a number less than 100!');
             else if (args[0] < 1) return msg.channel.send('Please specify a number greater than 1!');
-            const amount = parseInt(args[0]);
+            let amount = parseInt(args[0]);
             await msg.channel.bulkDelete(amount + 1);
             return msg.channel.send(`Successfully deleted ${amount} messages!`);
         } catch (error) {
