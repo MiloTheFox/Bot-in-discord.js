@@ -3,7 +3,7 @@ module.exports = (client, int) => {
   try {
     if (!int.isButton()) return;
 
-    const queue = client.player.getQueue(int.guildId);
+    let queue = client.player.getQueue(int.guildId);
     switch (int.customId) {
       case "saveTrack":
         {
@@ -14,7 +14,7 @@ module.exports = (client, int) => {
               components: [],
             });
 
-          const embed = new Discord.MessageEmbed()
+          let embed = new Discord.MessageEmbed()
             .setColor("BLUE")
             .setTitle(client.user.username + " - Save Track")
             .setThumbnail(client.user.displayAvatarURL())
@@ -55,15 +55,15 @@ module.exports = (client, int) => {
             components: [],
           });
 
-        const progress = queue.createProgressBar();
-        const timestamp = queue.getPlayerTimestamp();
+        let progress = queue.createProgressBar();
+        let timestamp = queue.getPlayerTimestamp();
 
         if (timestamp.progress == "Infinity")
           return int.message.edit({
             content: `This song is live streaming, no duration data to display. 🎧`,
           });
 
-        const embed = new Discord.MessageEmbed()
+        let embed = new Discord.MessageEmbed()
           .setColor("BLUE")
           .setTitle(queue.current.title)
           .setThumbnail(client.user.displayAvatarURL())
