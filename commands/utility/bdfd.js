@@ -16,7 +16,6 @@ module.exports = {
             if (!response.success) {
                 return msg.channel.send(response.message);
             }
-            // get the functions arguments, if there are none then set it to none
             let argsString = response.data.args.length > 0 ? response.data.args.map(arg => `\`${arg.name}\``).join(', ') : 'None';
             console.log(argsString)
             let embed = new MessageEmbed()
