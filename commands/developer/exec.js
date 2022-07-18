@@ -19,7 +19,7 @@ module.exports = {
             exec(args.join(' '), (error, stdout, stderr) => {
                 if (!error) {
                     // embed
-                    const embed = new MessageEmbed()
+                    let embed = new MessageEmbed()
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
                     .setColor('BLUE')
                     .setTitle('Command Executed!')
@@ -28,7 +28,7 @@ module.exports = {
                     .setTimestamp();
                     return msg.reply({embeds: [embed]});
                 } else {
-                    const embed = new MessageEmbed()
+                    let embed = new MessageEmbed()
                     .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
                     .setColor('RED')
                     .setTitle('Error ocurred!')
