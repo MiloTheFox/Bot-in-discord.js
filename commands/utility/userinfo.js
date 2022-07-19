@@ -11,7 +11,6 @@ module.exports = {
         try {
             let member = msg.mentions.members.first() || await msg.guild.members.fetch(args[0]) || msg.guild.members.get(args[0]);
             if (!args[0]) {
-                console.log('Number 1')
                 member = msg.member;
                 let authorEmbed = new MessageEmbed()
                     .setAuthor({ name: `${member.user.tag}`, iconURL: member.displayAvatarURL({ dynamic: true }) })
@@ -30,7 +29,6 @@ module.exports = {
                     .setTimestamp();
                 return msg.channel.send({ embeds: [authorEmbed] });
             } else {
-                console.log('Number 2')
                 let memberEmbed = new MessageEmbed()
                     .setAuthor({ name: `${member.user.tag}`, iconURL: member.displayAvatarURL({ dynamic: true }) })
                     .setThumbnail(member.displayAvatarURL({ dynamic: true }))
@@ -49,7 +47,6 @@ module.exports = {
                 return msg.channel.send({ embeds: [memberEmbed] });
             }
         } catch (err) {
-            console.log('Number 3')
             await client.users.fetch(args[0]).then((fetching) => {
                 let userInfo = new MessageEmbed()
                     .setAuthor({ name: `${fetching.tag}`, iconURL: fetching.displayAvatarURL({ dynamic: true }) })
