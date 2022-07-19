@@ -25,7 +25,7 @@ module.exports = (client, int) => {
             .addField(`Requested By`, `${queue.current.requestedBy}`)
             .setTimestamp()
             .setFooter({
-              text: "Music Utility",
+              text: "Dragon Serengeti",
               iconURL: int.user.displayAvatarURL({ dynamic: true }),
             });
           int.member
