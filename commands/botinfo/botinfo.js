@@ -31,7 +31,7 @@ module.exports = {
                 .setTimestamp()
                 .setThumbnail(client.user.displayAvatarURL())
                 .setTitle(client.user.username)
-                .setFooter({ text: 'Music Bot Commands', iconURL: message.author.avatarURL({ dynamic: true }) })
+                .setFooter({ text: 'Dragon Serengeti - Made by ' + client.users.cache.get('705557092802625576').tag, iconURL: message.author.avatarURL({ dynamic: true }) })
                 .setDescription(`**
             > Guilds: \`${client.guilds.cache.size}\`
             > Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`
