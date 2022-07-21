@@ -20,7 +20,7 @@ module.exports = {
                     .setStyle("DANGER")
                     .setLabel("Delete")
                     .setCustomId("del"))
-
+            
             let embed = new MessageEmbed()
                 .setColor("BLUE")
                 .setTimestamp()
