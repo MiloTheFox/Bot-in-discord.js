@@ -32,13 +32,13 @@ module.exports = {
             > **Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`**
             > **Channels: \`${client.channels.cache.size}\`**
             > **Commands: \`${client.commands.size}\`**
-            ❯ **Uptime: <t:${uptime}:R>**
-            ❯ **Created: <t:${created}:R> - <t:${created}:F>**
-            ❯ **Node: \`${process.version}\`**
-            ❯ **Discord.js: \`${require('discord.js').version}\`**
-            ❯ **OS: \`${process.platform}\`**
-            ❯ **CPU: \`${process.arch}\`**
-            ❯ **RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
+            > **Uptime: <t:${uptime}:R>**
+            > **Created: <t:${created}:R> - <t:${created}:F>**
+            > **Node: \`${process.version}\`**
+            > **Discord.js: \`${require('discord.js').version}\`**
+            > **OS: \`${process.platform}\`**
+            > **CPU: \`${process.arch}\`**
+            > **RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
             `)
                 .addField("Invite Bot", `**[Add Me](https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=1084516334400)**`, true)
             message.channel.send({ embeds: [embed], components: [button] }).then(async Message => {
@@ -62,13 +62,13 @@ module.exports = {
                                 > **Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`**
                                 > **Channels: \`${client.channels.cache.size}\`**
                                 > **Commands: \`${client.commands.size}\`**
-                                ❯ **Uptime: <t:${uptime}:R>**
-                                ❯ **Created: <t:${created}:R> - <t:${created}:F>**
-                                ❯ **Node: \`${process.version}\`**
-                                ❯ **Discord.js: \`${require('discord.js').version}\`**
-                                ❯ **OS: \`${process.platform}\`**
-                                ❯ **CPU: \`${process.arch}\`**
-                                ❯ **RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
+                                > **Uptime: <t:${uptime}:R>**
+                                > **Created: <t:${created}:R> - <t:${created}:F>**
+                                > **Node: \`${process.version}\`**
+                                > **Discord.js: \`${require('discord.js').version}\`**
+                                > **OS: \`${process.platform}\`**
+                                > **CPU: \`${process.arch}\`**
+                                > **RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
                                 `)
                                 .addField("Invite Bot", `**[Add Me](https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=1084516334400)**`, true)
 
@@ -110,13 +110,13 @@ module.exports = {
                         > **Users: \`${Math.ceil(client.guilds.cache.reduce((a, b) => a + b.memberCount, 0).toLocaleString("tr-TR"))}\`**
                         > **Channels: \`${client.channels.cache.size}\`**
                         > **Commands: \`${client.commands.size}\`**
-                        ❯ **Uptime: <t:${uptime}:R>**
-                        ❯ **Created: <t:${created}:R> - <t:${created}:F>**
-                        ❯ **Node: \`${process.version}\`**
-                        ❯ **Discord.js: \`${require('discord.js').version}\`**
-                        ❯ **OS: \`${process.platform}\`**
-                        ❯ **CPU: \`${process.arch}\`**
-                        ❯ **RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
+                        > **Uptime: <t:${uptime}:R>**
+                        > **Created: <t:${created}:R> - <t:${created}:F>**
+                        > **Node: \`${process.version}\`**
+                        > **Discord.js: \`${require('discord.js').version}\`**
+                        > **OS: \`${process.platform}\`**
+                        > **CPU: \`${process.arch}\`**
+                        > **RAM: \`${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB\`**
                         `)
                         .addField("Invite Bot", `**[Add Me](https://discordapp.com/oauth2/authorize?client_id=${client.user.id}&scope=bot&permissions=1084516334400)**`, true)
 
