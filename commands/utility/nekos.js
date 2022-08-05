@@ -1,5 +1,5 @@
 const { MessageButton, MessageActionRow, MessageEmbed } = require('discord.js');
-const { Client } = require('nekos-best.js');
+const fetch = require('node-fetch')
 
 module.exports = {
   name: 'neko',
@@ -8,19 +8,18 @@ module.exports = {
   category: 'utility',
   nsfw: false,
   run: async (client, message, args) => {
-    const nekosBest = new Client();
-    await nekosBest.init();
     try {
+      let neko = await fetch('https://nekos.best/api/v2/neko').then(response => response.json());
       let amount = args[0] ? args[0] : 1;
-      if (isNaN(amount))
-        return message.channel.send('Please enter a valid number!');
-      if (amount < 1)
-        return message.channel.send('Please enter a number greater than 0!');
-      if (amount % 1 !== 0)
-        return message.channel.send('Please enter a whole number!');
-      if (amount > 10)
-        return message.channel.send('Please enter a number less than 10!');
+      if (isNaN(amount)) return message.channel.send('Please enter a valid number!');
+      if (amount < 1) return message.channel.send('Please enter a number greater than 0!');
+      // if amount contains a float, return an error
+      if (amount % 1 !== 0) return message.channel.send('Please enter a whole number!');
+      // if the amount is greater than 10, return an error
+      if (amount > 10) return message.channel.send('Please enter a number less than 10!');
+      // if the amount is empty or 1, send the image
       if (amount === '' || amount === 1) {
+        // add buttons
         let button = new MessageActionRow().addComponents(
           new MessageButton()
             .setStyle("SUCCESS")
@@ -31,9 +30,10 @@ module.exports = {
             .setLabel("Delete 🗑")
             .setCustomId("del")
         );
-        let embed = new MessageEmbed()
+        // send the image
+        const embed = new MessageEmbed()
           .setColor('RANDOM')
-          .setImage((await nekosBest.fetchRandom('neko')).results[0].url)
+          .setImage(`${neko.results[0].url}`)
           .setFooter({ text: 'Powered by nekos.best', icon_url: message.author.displayAvatarURL({ dynamic: true }) })
           .setTimestamp();
         return message.channel.send({ embeds: [embed], components: [button] }).then(async (Message) => {
@@ -46,20 +46,28 @@ module.exports = {
             if (button.user.id !== message.author.id) return;
             switch (button.customId) {
               case "reload":
+                neko = await fetch('https://nekos.best/api/v2/neko').then(response => response.json())
                 embed.setColor('RANDOM')
-                embed.setImage((await nekosBest.fetchRandom('neko')).results[0].url)
+                embed.setImage(`${neko.results[0].url}`)
                 embed.setFooter({ text: 'Powered by nekos.best', icon_url: message.author.displayAvatarURL({ dynamic: true }) })
                 embed.setTimestamp();
                 await Message.edit({ embeds: [embed] });
-                button.reply({ content: "> **✅ Success** | Image reloaded!", ephemeral: true,
-                  }).catch((e) => {
+                button
+                  .reply({
+                    content: "> **✅ Success** | Image reloaded!",
+                    ephemeral: true,
+                  })
+                  .catch((e) => {
                     console.log(e);
                   });
                 break;
               case "del":
                 col.stop(true);
                 await Message.delete();
-                button.send({ content: "> **✅ Success** | Image deleted!", ephemeral: true,
+                button
+                  .reply({
+                    content: "> **✅ Success** | Image deleted!",
+                    ephemeral: true,
                   })
                   .catch((e) => {
                     console.log(e);
@@ -69,12 +77,14 @@ module.exports = {
           });
         });
       }
-      let embeds = [];
+      // send the embeds in 1 message
+      const embeds = [];
       for (let i = 0; i < amount; i++) {
+        neko = await fetch('https://nekos.best/api/v2/neko').then(response => response.json())
         embeds.push(
           new MessageEmbed()
             .setColor('GREEN')
-            .setImage((await nekosBest.fetchRandom('neko')).results[0].url)
+            .setImage(`${neko.results[0].url}`)
             .setFooter({ text: "Powered by nekos.best", iconURL: client.user.displayAvatarURL({ format: 'png', dynamic: true }) })
             .setTimestamp()
         );
