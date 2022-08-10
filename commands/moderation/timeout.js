@@ -1,61 +1,50 @@
 const Discord = require('discord.js');
-const fetch = require('node-fetch');
 const ms = require('ms');
-
 
 module.exports = {
     name: 'timeout',
     description: 'Timeouts the specified user for the specified amount of time. Timeout limit is 28 Days due to Discord Limitations!',
-    usage: 'ds!timeout <user> <time> (optional)<reason>',
-    run: async(client, msg, args) => {
-        try{
-            const time = args.slice(1).join(' ');
-            let reason = args.slice(2).join(' ');
-            const milliseconds = ms(time);
-            const user = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || msg.guild.members.cache.find(member => member.user.username.toLowerCase() === args.slice(0).join(' ').toLowerCase());
-            if(!time) {
+    usage: 'ds!timeout <user> <time> (optional) <reason>',
+    run: async (client, msg, args) => {
+        try {
+            let time = args[1];
+            let reason = args.slice(2).join(' ') || 'No reason specified!';
+            let milliseconds = ms(time);
+            let user = msg.mentions.members.first() || msg.guild.members.cache.get(args[0]) || await msg.guild.members.fetch(args[0]);
+            if (!time) {
                 return msg.channel.send('You must specify a time!');
             }
-            if(!user) {
+            if (!user) {
                 return msg.channel.send('You must specify a user!');
             }
-            if(user.permissions.has('ADMINISTRATOR')) {
-                return msg.channel.send('You do not have the permission to timeout this user!');
+            if (user.permissions.has('ADMINISTRATOR')) {
+                return msg.channel.send('You do not have the permission to timeout this user as they are an Administrator!');
             }
-            if(!msg.guild.me.permissions.has('MODERATE_MEMBERS')) {
+            if (!msg.guild.me.permissions.has('MODERATE_MEMBERS')) {
                 return msg.channel.send('I do not have the permission to timeout this user!');
             }
-            if(user.id === msg.guild.ownerId) {
+            if (user.id === msg.guild.ownerId) {
                 return msg.channel.send('You cannot timeout the owner of the server!');
             }
-            if(user.id === client.user.id) {
+            if (user.id === client.user.id) {
                 return msg.channel.send('I cannot timeout myself!');
             }
-            if(!reason) {
-                reason = 'No reason specified!';
+            if (milliseconds > 28 * 24 * 60 * 60 * 1000) {
+                return msg.channel.send('The timeout limit is 28 Days due to Discord Limitations!');
             }
-            if(user.isCommunicationDisabled) {
-                return msg.channel.send('This User is timed out already!');
+            if (!user.isCommunicationDisabled()) {
+            await user.timeout(milliseconds, reason);
+            let embed = new Discord.MessageEmbed()
+                .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+                .setColor('BLUE')
+                .setTitle('Timeout')
+                .setDescription(`**User:** ${user.user.tag}\n**Time:** **<t:${Math.round(parseInt(Date.now() + milliseconds) / 1000)}:R>**\n**Reason:** ${reason}`)
+                .setTimestamp();
+            return msg.channel.send({ embeds: [embed] });
+            } else {
+                return msg.channel.send("The User is already timeouted")
             }
-            const iosTime = new Date(Date.now() + milliseconds).toISOString();
-
-            await fetch(`https://discordapp.com/api/guilds/${msg.guild.id}/members/${user.id}`, {
-                method: 'PATCH',
-                body: JSON.stringify({ communication_disabled_until: iosTime }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bot ${client.token}`,
-                },
-            });
-            // send the timeout message in an embed
-            const embed = new Discord.MessageEmbed()
-            .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({dynamic: true})})
-            .setColor('BLUE')
-            .setTitle('Timeout')
-            .setDescription(`**User:** ${user.user.tag}\n**Time:** ${time}\n**Reason:** ${reason}`)
-            .setTimestamp();
-            return msg.channel.send({embeds: [embed]});
-        } catch(error) {
+        } catch (error) {
             console.log(error);
             return;
         }
