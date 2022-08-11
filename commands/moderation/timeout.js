@@ -31,14 +31,14 @@ module.exports = {
                 return msg.channel.send('The timeout limit is 28 Days due to Discord Limitations!');
             }
             else if (!user.isCommunicationDisabled()) {
-            await user.timeout(milliseconds, reason);
-            let embed = new Discord.MessageEmbed()
-                .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
-                .setColor('BLUE')
-                .setTitle('Timeout')
-                .setDescription(`**User:** ${user.user.tag}\n**Time:** **<t:${Math.round(parseInt(Date.now() + milliseconds) / 1000)}:R>**\n**Reason:** ${reason}`)
-                .setTimestamp();
-            return msg.channel.send({ embeds: [embed] });
+                await user.timeout(milliseconds, reason);
+                let embed = new Discord.MessageEmbed()
+                    .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
+                    .setColor('BLUE')
+                    .setTitle('Timeout')
+                    .setDescription(`**User:** ${user.user.tag}\n**Time:** **<t:${Math.round(parseInt(Date.now() + milliseconds) / 1000)}:R>**\n**Reason:** ${reason}`)
+                    .setTimestamp();
+                return msg.channel.send({ embeds: [embed] });
             } else {
                 return msg.channel.send("The User is already timeouted")
             }
