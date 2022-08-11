@@ -18,11 +18,14 @@ module.exports = {
             if (user.permissions.has('ADMINISTRATOR')) {
                 return msg.channel.send('You do not have the permission to timeout this user as they are an Administrator!');
             }
-            else if (!msg.guild.me.permissions.has('MODERATE_MEMBERS')) {
-                return msg.channel.send('I do not have the permission to timeout this user!');
+            else if (!msg.member.permissions.has('MODERATE_MEMBERS')) {
+                return msg.channel.send('You do not have the Moderate Members permission to use this Command!')
             }
             else if (user.id === msg.guild.ownerId) {
                 return msg.channel.send('You cannot timeout the owner of the server!');
+            }
+            else if (!msg.guild.me.permissions.has('MODERATE_MEMBERS')) {
+                return msg.channel.send('I do not have the permission to timeout this user!');
             }
             else if (user.id === client.user.id) {
                 return msg.channel.send('I cannot timeout myself!');
