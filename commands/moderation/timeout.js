@@ -3,6 +3,7 @@ const ms = require('ms');
 
 module.exports = {
     name: 'timeout',
+    aliases: ["tm", "add-timeout", "atimeout", "atm"],
     description: 'Timeouts the specified user for the specified amount of time. Timeout limit is 28 Days due to Discord Limitations!',
     usage: 'ds!timeout <user> <time> (optional) <reason>',
     run: async (client, msg, args) => {
@@ -14,7 +15,7 @@ module.exports = {
                 return msg.channel.send('You must specify a user and the time!');
             }
             let milliseconds = ms(time);
-            else if (user.permissions.has('ADMINISTRATOR')) {
+            if (user.permissions.has('ADMINISTRATOR')) {
                 return msg.channel.send('You do not have the permission to timeout this user as they are an Administrator!');
             }
             else if (!msg.guild.me.permissions.has('MODERATE_MEMBERS')) {
@@ -30,7 +31,7 @@ module.exports = {
                 return msg.channel.send('The timeout limit is 28 Days due to Discord Limitations!');
             }
             else if (!user.isCommunicationDisabled()) {
-            await user.timeout(ms(time), reason);
+            await user.timeout(milliseconds, reason);
             let embed = new Discord.MessageEmbed()
                 .setAuthor({ name: `${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
                 .setColor('BLUE')
