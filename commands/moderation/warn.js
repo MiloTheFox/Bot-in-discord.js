@@ -1,37 +1,37 @@
-const warns = require('/home/container/commands/moderation/warns.json');
 const Discord = require('discord.js');
-const fs = require('fs');
+const warns = require('./warns.json');
+const fs = require('fs')
 
 module.exports = {
     name: 'warn',
     description: 'Warn a user',
-    usage: 'warn <user> <reason>',
+    usage: 'ds!warn <user> <reason>',
     category: 'moderation',
-    guildOnly: true,
     run: async (client, message, args) => {
         try {
             if (!message.member.permissions.has('MANAGE_MESSAGES')) return message.reply('You do not have permission to use this command.');
             if (!message.guild.me.permissions.has('MANAGE_MESSAGES')) return message.reply('I do not have permission to use this command.');
-            if (!args[0]) return message.reply('Please specify a user to warn.');
-            let user = message.mentions.users.first() || message.guild.members.cache.get(args[0]);
-            let reason = args.slice(1).join(' ') || 'No reason given.';
-            let warnEmbed = new Discord.MessageEmbed()
-                .setColor('#ff0000')
-                .setTitle('Warned User')
-                .setDescription(`**User:** ${user.tag} (${user.id})\n**Warned By:** ${message.author.tag} (${message.author.id})\n**Reason:** ${reason}`)
-                .setTimestamp();
-            message.channel.send({ embeds: [warnEmbed] });
+            const user = message.mentions.users.first() || message.guild.members.cache.get(args[0]) || await message.guild.members.fetch(args[0]);
+            if (!user) return message.reply('Please specify a valid user to warn.');
+            if (!args[1]) return message.reply('Please specify a reason for the warn.');
             if (!warns[user.id]) warns[user.id] = [];
-            warns[message.guild.id].push({
+            const warn = {
                 moderator: message.author.id,
-                reason: reason,
-                date: new Date(),
-                guildid: message.guild.id
-            });
+                reason: args.slice(1).join(' '),
+                date: Math.round(parseInt(Date.now()) / 1000)
+            };
+            warns[user.id].push(warn);
             fs.writeFile('./warns.json', JSON.stringify(warns, 2), (err) => {
                 if (err) console.log(err);
-            }
-            );
-        } catch (err) { console.log(err) }
+            });
+            const warnEmbed = new Discord.MessageEmbed()
+                .setColor('#ff0000')
+                .setTitle('Warned User')
+                .setDescription(`**User:** ${user.user.tag} (${user.id})\n**Warn:**\n**Moderator:** ${client.users.cache.get(warn.moderator).tag} (${warn.moderator})\n**Reason:** ${warn.reason}\n**Date:** <t:${warn.date}:F>`)
+                .setTimestamp();
+            return message.channel.send({ embeds: [warnEmbed] });
+        } catch (err) {
+            console.log(err);
+        }
     }
-};
+}
