@@ -28,9 +28,9 @@ readdirSync('./commands/').forEach(dirs => {
     let commands = readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
     for (const file of commands) {
         let command = require(`./commands/${dirs}/${file}`);
-        console.log(`${command.name.toLowerCase()} Load Command!`);
         client.commands.set(command.name.toLowerCase(), command);
         delete require.cache[require.resolve(`./commands/${dirs}/${file}`)];
+        console.log(`-> Loaded command ${file.split('.')[0]}`);
     };
 });
 
