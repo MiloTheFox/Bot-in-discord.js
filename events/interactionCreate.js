@@ -17,12 +17,13 @@ module.exports = (client, int) => {
           let embed = new Discord.MessageEmbed()
             .setColor("BLUE")
             .setTitle(client.user.username + " - Save Track")
-            .setThumbnail(client.user.displayAvatarURL())
-            .addField(`Track`, `\`${queue.current.title}\``)
-            .addField(`Duration`, `\`${queue.current.duration}\``)
-            .addField(`URL`, `${queue.current.url}`)
-            .addField(`Saved Server`, `\`${int.guild.name}\``)
-            .addField(`Requested By`, `${queue.current.requestedBy}`)
+            .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
+            .addFields(
+              { name: "Track", value: queue.current.title, inline: true },
+              { name: "Duration", value: queue.current.duration, inline: true },
+              { name: "URL", value: queue.current.url, inline: true },
+              { name: "Saved Server", value: int.guild.name, inline: true },
+              { name: "Requested by", value: int.author.tag, inline: true })
             .setTimestamp()
             .setFooter({
               text: "Dragon Serengeti",
@@ -66,7 +67,7 @@ module.exports = (client, int) => {
         let embed = new Discord.MessageEmbed()
           .setColor("BLUE")
           .setTitle(queue.current.title)
-          .setThumbnail(client.user.displayAvatarURL())
+          .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
           .setTimestamp()
           .setDescription(`${progress} **(${timestamp.progress}%)**`)
           .setFooter({
